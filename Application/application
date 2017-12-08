@@ -1,0 +1,5 @@
+#!/bin/sh
+# Run example application with correct paths
+installdir=`dirname $0`
+export LD_LIBRARY_PATH=$installdir/lib:$LD_LIBRARY_PATH
+java -classpath $installdir/lib/\* uk.co.humboldt.MavenJNIExample.Application $*
