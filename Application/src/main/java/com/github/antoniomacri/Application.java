@@ -1,4 +1,4 @@
-package uk.co.humboldt.MavenJNIExample;
+package com.github.antoniomacri;
 
 public class Application {
     public static void main(String[] args) {

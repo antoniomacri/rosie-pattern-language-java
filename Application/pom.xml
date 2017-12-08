@@ -6,11 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>Application</artifactId>
-    <name>Application using native library</name>
     <packaging>jar</packaging>
     <parent>
-        <groupId>uk.co.humboldt.MavenJNIExample</groupId>
-        <artifactId>Global</artifactId>
+        <groupId>com.github.antoniomacri</groupId>
+        <artifactId>rosie-bundle</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
@@ -18,18 +17,18 @@
     <dependencies>
         <dependency>
             <groupId>${parent.groupId}</groupId>
-            <artifactId>WrapperJava</artifactId>
+            <artifactId>rosie-jni-java</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
-            <artifactId>WrapperNative</artifactId>
+            <artifactId>rosie-jni-native</artifactId>
             <version>${project.version}</version>
             <type>so</type>
         </dependency>
         <dependency>
             <groupId>${parent.groupId}</groupId>
-            <artifactId>library</artifactId>
+            <artifactId>rosie-pattern-language</artifactId>
             <version>${project.version}</version>
             <!-- Reference the ID of the assembly -->
             <classifier>libs</classifier>

@@ -5,16 +5,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>uk.co.humboldt.MavenJNIExample</groupId>
-    <artifactId>Global</artifactId>
+    <groupId>com.github.antoniomacri</groupId>
+    <artifactId>rosie-bundle</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Top Level Project</name>
+    <name>rosie-bundle</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>library</module>
-        <module>WrapperNative</module>
-        <module>WrapperJava</module>
+        <module>rosie-pattern-language</module>
+        <module>rosie-jni-native</module>
+        <module>rosie-jni-java</module>
         <module>Application</module>
     </modules>
 

@@ -1,4 +1,4 @@
-package uk.co.humboldt.MavenJNIExample;
+package com.github.antoniomacri;
 
 // Trivial demonstration class
 public class TestObject {

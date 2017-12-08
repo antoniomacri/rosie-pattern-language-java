@@ -5,13 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>WrapperNative</artifactId>
-    <name>Library JNI Wrapper Native Code</name>
+    <artifactId>rosie-jni-native</artifactId>
     <packaging>so</packaging>
-
     <parent>
-        <groupId>uk.co.humboldt.MavenJNIExample</groupId>
-        <artifactId>Global</artifactId>
+        <groupId>com.github.antoniomacri</groupId>
+        <artifactId>rosie-bundle</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
@@ -19,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>${parent.groupId}</groupId>
-            <artifactId>library</artifactId>
+            <artifactId>rosie-pattern-language</artifactId>
             <version>${project.version}</version>
             <!-- Reference the ID of the assembly -->
             <classifier>libs</classifier>
@@ -28,7 +26,7 @@
 
         <dependency>
             <groupId>${parent.groupId}</groupId>
-            <artifactId>WrapperJava</artifactId>
+            <artifactId>rosie-jni-java</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -78,14 +76,14 @@
                         </source>
                         <source>
                             <directory>
-                                ${project.build.directory}/library-${project.version}/include
+                                ${project.build.directory}/rosie-pattern-language-${project.version}/include
                             </directory>
                         </source>
                     </sources>
                     <linkerStartOptions>
                         <linkerStartOption>
                             -shared
-                            -L${project.build.directory}/library-${project.version}/lib
+                            -L${project.build.directory}/rosie-pattern-language-${project.version}/lib
                             -lstdc++
                         </linkerStartOption>
                     </linkerStartOptions>
@@ -102,7 +100,7 @@
                         <configuration>
                             <javahClassNames>
                                 <className>
-                                    uk.co.humboldt.MavenJNIExample.TestObject
+                                    com.github.antoniomacri.TestObject
                                 </className>
                             </javahClassNames>
                         </configuration>

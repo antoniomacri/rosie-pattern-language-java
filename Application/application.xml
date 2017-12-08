@@ -15,7 +15,7 @@
 		<!-- Make sure the shared library from the native build is on the path. -->
 		<dependencySet>
 			<includes>
-				<include>uk.co.humboldt.MavenJNIExample:WrapperNative</include>
+				<include>com.github.antoniomacri:rosie-jni-native</include>
 			</includes>
 			<!-- Rename to a fixed name to match the loading code
 			     System.loadLibrary("wrapper"); -->
@@ -30,7 +30,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>
-				${project.build.directory}/library-${project.version}/lib
+				${project.build.directory}/rosie-pattern-language-${project.version}/lib
 			</directory>
 			<outputDirectory>lib</outputDirectory>
 			<includes>

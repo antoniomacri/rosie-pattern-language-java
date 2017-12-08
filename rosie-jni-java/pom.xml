@@ -5,12 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>WrapperJava</artifactId>
-    <name>Library Wrapper Java Code</name>
+    <artifactId>rosie-jni-java</artifactId>
     <packaging>jar</packaging>
     <parent>
-        <groupId>uk.co.humboldt.MavenJNIExample</groupId>
-        <artifactId>Global</artifactId>
+        <groupId>com.github.antoniomacri</groupId>
+        <artifactId>rosie-bundle</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>

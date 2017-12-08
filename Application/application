@@ -6,4 +6,4 @@ installdir=`dirname $0`/target/Application-1.0-SNAPSHOT-application/Application-
 
 export LD_LIBRARY_PATH=$installdir/lib:$LD_LIBRARY_PATH
 
-java -classpath $installdir/lib/\* uk.co.humboldt.MavenJNIExample.Application $*
+java -classpath $installdir/lib/\* com.github.antoniomacri.Application $*

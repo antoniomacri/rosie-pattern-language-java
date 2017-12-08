@@ -1,7 +1,7 @@
-#include "uk_co_humboldt_MavenJNIExample_TestObject.h"
+#include "com_github_antoniomacri_TestObject.h"
 #include <example.h>
 
-JNIEXPORT jdouble JNICALL Java_uk_co_humboldt_MavenJNIExample_TestObject_getY
+JNIEXPORT jdouble JNICALL Java_com_github_antoniomacri_TestObject_getY
   (JNIEnv *env, jobject obj)
 {
 	jclass cls = env->GetObjectClass(obj);
