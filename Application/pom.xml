@@ -34,6 +34,11 @@
             <classifier>libs</classifier>
             <type>tar</type>
         </dependency>
+        <dependency>
+            <groupId>com.github.antoniomacri</groupId>
+            <artifactId>rosie-jna</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

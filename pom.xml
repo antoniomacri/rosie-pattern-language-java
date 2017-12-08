@@ -15,6 +15,7 @@
         <module>rosie-pattern-language</module>
         <module>rosie-jni-native</module>
         <module>rosie-jni-java</module>
+        <module>rosie-jna</module>
         <module>Application</module>
     </modules>
 
