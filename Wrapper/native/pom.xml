@@ -87,10 +87,13 @@
 							-shared
 							-L${project.build.directory}/library-${project.version}/lib
 							-lstdc++
-							-lexample
 						</linkerStartOption>
 					</linkerStartOptions>
-
+					<linkerEndOptions>
+						<linkerEndOption>
+							-lexample
+						</linkerEndOption>
+					</linkerEndOptions>
 
 				</configuration>
 
