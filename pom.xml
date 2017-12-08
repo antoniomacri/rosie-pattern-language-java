@@ -13,7 +13,8 @@
 
     <modules>
         <module>library</module>
-        <module>Wrapper</module>
+        <module>WrapperNative</module>
+        <module>WrapperJava</module>
         <module>Application</module>
     </modules>
 

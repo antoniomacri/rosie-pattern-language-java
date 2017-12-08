@@ -5,19 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Wrapper</artifactId>
-    <name>JNI Wrapper for native library</name>
-    <packaging>pom</packaging>
-
+    <artifactId>WrapperJava</artifactId>
+    <name>Library Wrapper Java Code</name>
+    <packaging>jar</packaging>
     <parent>
         <groupId>uk.co.humboldt.MavenJNIExample</groupId>
         <artifactId>Global</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
-    <modules>
-        <module>java</module>
-        <module>native</module>
-    </modules>
 
 </project>

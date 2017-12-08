@@ -11,7 +11,7 @@
 
     <parent>
         <groupId>uk.co.humboldt.MavenJNIExample</groupId>
-        <artifactId>Wrapper</artifactId>
+        <artifactId>Global</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
