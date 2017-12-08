@@ -99,11 +99,11 @@
 						<id>javah</id>
 						<phase>generate-sources</phase>
 						<configuration>
-							<classNames>
+							<javahClassNames>
 								<className>
 									uk.co.humboldt.MavenJNIExample.TestObject
 								</className>
-							</classNames>
+							</javahClassNames>
 						</configuration>
 						<goals>
 							<goal>javah</goal>
