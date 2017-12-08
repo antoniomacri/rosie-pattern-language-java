@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
 # Run example application with correct paths
-installdir=`dirname $0`
+
+installdir=`dirname $0`/target/Application-1.0-SNAPSHOT-application/Application-1.0-SNAPSHOT
+
 export LD_LIBRARY_PATH=$installdir/lib:$LD_LIBRARY_PATH
+
 java -classpath $installdir/lib/\* uk.co.humboldt.MavenJNIExample.Application $*
