@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>rosie-pattern-language</module>
+        <module>rosie-pattern-language-native</module>
         <module>rosie-jna</module>
     </modules>
 
