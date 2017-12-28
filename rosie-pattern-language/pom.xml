@@ -5,7 +5,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rosie-jna</artifactId>
+    <artifactId>rosie-pattern-language</artifactId>
     <packaging>jar</packaging>
     <parent>
         <groupId>com.github.antoniomacri</groupId>

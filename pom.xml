@@ -13,7 +13,7 @@
 
     <modules>
         <module>rosie-pattern-language-native</module>
-        <module>rosie-jna</module>
+        <module>rosie-pattern-language</module>
     </modules>
 
     <organization>
