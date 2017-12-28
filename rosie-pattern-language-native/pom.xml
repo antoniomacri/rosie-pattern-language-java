@@ -17,6 +17,32 @@
         <plugins>
 
             <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>${project.basedir}/submodule/Makefile</file>
+                    <regexFlags>
+                        <regexFlag>MULTILINE</regexFlag>
+                    </regexFlags>
+                    <replacements>
+                        <replacement>
+                            <token>^DESTDIR=.+$</token>
+                            <value>DESTDIR=${project.build.directory}/install</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <!-- Use exec plugin to call make, to build or clean library for Linux -->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -24,26 +50,40 @@
                 <executions>
                     <execution>
                         <!-- make all in the Maven compile phase -->
-                        <id>buildlib</id>
+                        <id>build-lib</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <basedir>submodule</basedir>
+                            <executable>make</executable>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- make all in the Maven compile phase -->
+                        <id>install-lib</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <basedir>submodule</basedir>
                             <executable>make</executable>
                             <arguments>
-                                <argument>all</argument>
+                                install
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <!-- Make clean in the Maven clean phase -->
-                        <id>cleanlib</id>
+                        <id>clean-lib</id>
                         <phase>clean</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <basedir>submodule</basedir>
                             <executable>make</executable>
                             <arguments>
                                 <argument>clean</argument>
@@ -58,8 +98,7 @@
                 <version>3.1.0</version>
                 <configuration>
                     <descriptors>
-                        <!-- Assembly contents are defined in this file -->
-                        <descriptor>javalibs.xml</descriptor>
+                        <descriptor>assembly.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
