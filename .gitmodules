@@ -1,0 +1,3 @@
+[submodule "rosie-pattern-language-native/submodule"]
+	path = rosie-pattern-language-native/submodule
+	url = https://github.com/jamiejennings/rosie-pattern-language.git
