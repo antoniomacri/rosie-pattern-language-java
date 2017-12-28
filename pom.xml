@@ -16,4 +16,16 @@
         <module>rosie-jna</module>
     </modules>
 
+    <organization>
+        <name>Antonio Macrì</name>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>ing.antonio.macri@gmail.com</id>
+            <name>Antonio Macrì</name>
+            <email>ing.antonio.macri@gmail.com</email>
+        </developer>
+    </developers>
+
 </project>
