@@ -6,9 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.antoniomacri</groupId>
-    <artifactId>rosie-bundle</artifactId>
+    <artifactId>rosie-pattern-language-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>rosie-bundle</name>
+    <name>rosie-pattern-language-project</name>
     <packaging>pom</packaging>
 
     <modules>

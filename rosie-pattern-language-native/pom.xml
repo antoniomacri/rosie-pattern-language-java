@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <parent>
         <groupId>com.github.antoniomacri</groupId>
-        <artifactId>rosie-bundle</artifactId>
+        <artifactId>rosie-pattern-language-project</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
