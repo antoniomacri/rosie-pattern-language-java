@@ -8,7 +8,7 @@
     <groupId>com.github.antoniomacri</groupId>
     <artifactId>rosie-pattern-language-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>rosie-pattern-language-project</name>
+    <name>Rosie Pattern Language</name>
     <packaging>pom</packaging>
 
     <modules>
