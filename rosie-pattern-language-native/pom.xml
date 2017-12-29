@@ -10,7 +10,7 @@
     <parent>
         <groupId>com.github.antoniomacri</groupId>
         <artifactId>rosie-pattern-language-project</artifactId>
-        <version>1.0.0-alpha-6</version>
+        <version>1.0.0-alpha-6-next</version>
     </parent>
 
     <build>
