@@ -6,10 +6,7 @@ import com.sun.jna.ptr.IntByReference;
 
 
 /**
- * Create a RosieEngine pattern matching engine.  The first call to engine()
- * will load librosie from one of the standard shared library
- * directories for your system, or from a custom path provided as an
- * argument.
+ * Create a Rosie pattern matching engine.
  */
 public class RosieEngine {
     private RosieLib LIB = Native.loadLibrary("rosie", RosieLib.class);
@@ -51,25 +48,6 @@ public class RosieEngine {
     private Pointer engine;
 
 
-    /*
-     def __init__(self, custom_libpath=None):
-        global lib, libname
-        if not lib:
-            if custom_libpath:
-                libpath = path.join(custom_libpath, libname)
-                if not path.isfile(libpath):
-                    raise RuntimeError("Cannot find librosie at " + libpath)
-            else:
-                libpath = find_library(libname)
-                if not libpath:
-                    raise RuntimeError("Cannot find librosie using ctypes.util.find_library()")
-            lib = ffi.dlopen(libpath, ffi.RTLD_GLOBAL)
-        Cerrs = new_cstr()
-        self.engine = lib.rosie_new(Cerrs)
-        if self.engine == ffi.NULL:
-            raise RuntimeError("librosie: " + read_cstr(Cerrs))
-        return
-     */
     public RosieEngine() {
         RosieString errors = new_cstr();
         engine = LIB.rosie_new(errors);
@@ -114,19 +92,6 @@ public class RosieEngine {
         String errorsString = errors.toString();
         return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString.equals("{}") ? null : errorsString);
     }
-
-    /*
-    def loadfile(self, fn):
-        f = open(fn, 'r')
-        rplsource = f.read()
-        return self.load(rplsource)
-     *
-    public void loadfile(fn) {
-        f = open(fn, 'r')
-        rplsource = f.read()
-        return load(rplsource);
-    }
-    */
 
     public ImportResult import_pkg(String pkgname) {
         return import_pkg(pkgname, null);
