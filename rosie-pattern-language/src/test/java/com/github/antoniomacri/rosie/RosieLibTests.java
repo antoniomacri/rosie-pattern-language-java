@@ -39,7 +39,7 @@ public class RosieLibTests {
     @Test
     public void testAllocationByReferenceEmptyString() {
         String test = "";
-        RosieString.ByReference byReference = LIB.rosie_new_string_ptr(test, test.length());
+        RosieString byReference = LIB.rosie_new_string_ptr(test, test.length());
         assertThat(byReference, is(notNullValue()));
         assertThat(byReference.len.intValue(), is(equalTo(test.length())));
         assertThat(byReference.toString(), is(equalTo(test)));
@@ -48,7 +48,7 @@ public class RosieLibTests {
     @Test
     public void testAllocationByReferenceNonEmptyString() {
         String test = "ciao";
-        RosieString.ByReference byReference = LIB.rosie_new_string_ptr(test, test.length());
+        RosieString byReference = LIB.rosie_new_string_ptr(test, test.length());
         assertThat(byReference, is(notNullValue()));
         assertThat(byReference.len.intValue(), is(equalTo(test.length())));
         assertThat(byReference.toString(), is(equalTo(test)));

@@ -26,9 +26,6 @@ public class RosieString extends Structure {
     public static class ByValue extends RosieString implements Structure.ByValue {
     }
 
-    public static class ByReference extends RosieString implements Structure.ByReference {
-    }
-
 
     public UnsignedInt len;
     public Pointer ptr;

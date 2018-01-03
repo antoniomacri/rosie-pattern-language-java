@@ -23,9 +23,6 @@ public class RosieMatch extends Structure {
     public static class ByValue extends RosieMatch implements Structure.ByValue {
     }
 
-    public static class ByReference extends RosieMatch implements Structure.ByReference {
-    }
-
 
     public RosieString data;
     public int leftover;

@@ -28,13 +28,13 @@ public class RosieEngine {
     }
 
 
-    private RosieString.ByReference new_cstr() {
-        RosieString.ByReference str = LIB.rosie_new_string_ptr("", 0);
+    private RosieString new_cstr() {
+        RosieString str = LIB.rosie_new_string_ptr("", 0);
         return str;
     }
 
-    private RosieString.ByReference new_cstr(String expression) {
-        RosieString.ByReference str = LIB.rosie_new_string_ptr(expression, expression.length());
+    private RosieString new_cstr(String expression) {
+        RosieString str = LIB.rosie_new_string_ptr(expression, expression.length());
         return str;
     }
 
@@ -84,7 +84,7 @@ public class RosieEngine {
         return
      */
     public RosieEngine() {
-        RosieString.ByReference errors = new_cstr();
+        RosieString errors = new_cstr();
         engine = LIB.rosie_new(errors);
         if (engine == Pointer.NULL) {
             throw new RuntimeException(errors.toString());
@@ -92,7 +92,7 @@ public class RosieEngine {
     }
 
     public String config() {
-        RosieString.ByReference retvals = new_cstr();
+        RosieString retvals = new_cstr();
         int ok = LIB.rosie_config(engine, retvals);
         if (ok != 0) {
             throw new RuntimeException("config() failed (please report this as a bug)");
@@ -101,8 +101,8 @@ public class RosieEngine {
     }
 
     public RosieCompiled compile(String exp) {
-        RosieString.ByReference errors = new_cstr();
-        RosieString.ByReference rosieExpression = new_cstr(exp);
+        RosieString errors = new_cstr();
+        RosieString rosieExpression = new_cstr(exp);
         IntByReference pat = new_rplx();
         int ok = LIB.rosie_compile(engine, rosieExpression, pat, errors);
         if (ok != 0) {
@@ -116,10 +116,10 @@ public class RosieEngine {
     }
 
     public LoadResult load(String src) {
-        RosieString.ByReference rosieSrc = new_cstr(src);
+        RosieString rosieSrc = new_cstr(src);
         IntByReference ok = new IntByReference();
-        RosieString.ByReference rosiePkgname = new_cstr();
-        RosieString.ByReference errors = new_cstr();
+        RosieString rosiePkgname = new_cstr();
+        RosieString errors = new_cstr();
         int result = LIB.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
         if (result != 0) {
             throw new RuntimeException("load() failed (please report this as a bug)");
@@ -146,9 +146,9 @@ public class RosieEngine {
     }
 
     public ImportResult import_pkg(String pkgname, String as_name) {
-        RosieString.ByReference Cerrs = new_cstr();
-        RosieString.ByReference Cas_name = as_name != null ? new_cstr(as_name) : null;
-        RosieString.ByReference Cpkgname = new_cstr(pkgname);
+        RosieString Cerrs = new_cstr();
+        RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
+        RosieString Cpkgname = new_cstr(pkgname);
         IntByReference Csuccess = new IntByReference();
         int ok = LIB.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
         if (ok != 0) {
@@ -166,8 +166,8 @@ public class RosieEngine {
         if (Cpat.getValue() == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
-        RosieMatch.ByReference Cmatch = new RosieMatch.ByReference();
-        RosieString.ByReference Cinput = new_cstr(input);
+        RosieMatch Cmatch = new RosieMatch();
+        RosieString Cinput = new_cstr(input);
         int ok = LIB.rosie_match(engine, Cpat.getValue(), start, encoder, Cinput, Cmatch);
         if (ok != 0) {
             throw new RuntimeException("match() failed (please report this as a bug)");
@@ -191,8 +191,8 @@ public class RosieEngine {
             throw new RuntimeException("invalid compiled pattern");
         }
         IntByReference Cmatched = new IntByReference();
-        RosieString.ByReference Cinput = new_cstr(input);
-        RosieString.ByReference Ctrace = new_cstr();
+        RosieString Cinput = new_cstr(input);
+        RosieString Ctrace = new_cstr();
         int ok = LIB.rosie_trace(engine, Cpat.getValue(), start, style, Cinput, Cmatched, Ctrace);
         if (ok != 0) {
             throw new RuntimeException("trace() failed (please report this as a bug)");
@@ -225,7 +225,7 @@ public class RosieEngine {
         IntByReference Ccout = new IntByReference();
         IntByReference Ccerr = new IntByReference();
         int wff = wholefile ? 1 : 0;
-        RosieString.ByReference Cerrmsg = new_cstr();
+        RosieString Cerrmsg = new_cstr();
         int ok = LIB.rosie_matchfile(engine, Cpat.getValue(), encoder, wff,
                 infile != null ? infile : "",
                 outfile != null ? outfile : "",
