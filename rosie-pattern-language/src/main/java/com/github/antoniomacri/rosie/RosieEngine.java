@@ -15,19 +15,6 @@ public class RosieEngine {
     private RosieLib LIB = Native.loadLibrary("rosie", RosieLib.class);
 
 
-    /*
-    def new_rplx(engine):
-        def free_rplx(obj):
-            if obj[0] and engine.engine:
-                lib.rosie_free_rplx(engine.engine, obj[0])
-        obj = ffi.new("int *")
-        return ffi.gc(obj, free_rplx)
-     */
-    private IntByReference new_rplx() {
-        return new IntByReference();
-    }
-
-
     private RosieString new_cstr() {
         RosieString str = LIB.rosie_new_string_ptr("", 0);
         return str;
@@ -103,7 +90,7 @@ public class RosieEngine {
     public RosieCompiled compile(String exp) {
         RosieString errors = new_cstr();
         RosieString rosieExpression = new_cstr(exp);
-        IntByReference pat = new_rplx();
+        IntByReference pat = new IntByReference();
         int ok = LIB.rosie_compile(engine, rosieExpression, pat, errors);
         if (ok != 0) {
             throw new RuntimeException("compile() failed (please report this as a bug)");
