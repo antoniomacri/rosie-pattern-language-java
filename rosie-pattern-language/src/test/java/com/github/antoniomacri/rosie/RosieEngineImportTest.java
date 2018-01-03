@@ -20,7 +20,7 @@ public class RosieEngineImportTest {
 
     @Test
     public void testImport() {
-        ImportResult importResult = rosie.import_pkg("net");
+        ImportResult importResult = rosie.importPackage("net");
 
         assertThat("import result", importResult.ok, is(not(equalTo(0))));
         assertThat("package name", importResult.packageName, is(equalTo("net")));
@@ -29,7 +29,7 @@ public class RosieEngineImportTest {
 
     @Test
     public void testImportWithAlias() {
-        ImportResult importResult = rosie.import_pkg("net", "foobar");
+        ImportResult importResult = rosie.importPackage("net", "foobar");
 
         assertThat("import result", importResult.ok, is(not(equalTo(0))));
         assertThat("package name", importResult.packageName, is(equalTo("net")));  // actual name inside the package
@@ -60,7 +60,7 @@ public class RosieEngineImportTest {
 
     @Test
     public void testMatchOk() {
-        rosie.import_pkg("net");
+        rosie.importPackage("net");
         RosieCompiled compiled = rosie.compile("net.any");
         IntByReference net_any = compiled.pat;
 
@@ -71,7 +71,7 @@ public class RosieEngineImportTest {
 
     @Test
     public void testMatchKo() {
-        rosie.import_pkg("net");
+        rosie.importPackage("net");
         RosieCompiled compiled = rosie.compile("net.any");
         IntByReference net_any = compiled.pat;
         MatchResult matchResult = rosie.match(net_any, "Hello, world!", 1, "color");
@@ -81,7 +81,7 @@ public class RosieEngineImportTest {
 
     @Test
     public void testImportFailure() {
-        ImportResult importResult = rosie.import_pkg("THISPACKAGEDOESNOTEXIST");
+        ImportResult importResult = rosie.importPackage("THISPACKAGEDOESNOTEXIST");
 
         assertThat("import result", importResult.ok, is(equalTo(0)));
         assertThat("errors", importResult.errors, is(notNullValue()));

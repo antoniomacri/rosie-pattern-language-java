@@ -93,11 +93,11 @@ public class RosieEngine {
         return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString.equals("{}") ? null : errorsString);
     }
 
-    public ImportResult import_pkg(String pkgname) {
-        return import_pkg(pkgname, null);
+    public ImportResult importPackage(String pkgname) {
+        return importPackage(pkgname, null);
     }
 
-    public ImportResult import_pkg(String pkgname, String as_name) {
+    public ImportResult importPackage(String pkgname, String as_name) {
         RosieString Cerrs = new_cstr();
         RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
         RosieString Cpkgname = new_cstr(pkgname);
