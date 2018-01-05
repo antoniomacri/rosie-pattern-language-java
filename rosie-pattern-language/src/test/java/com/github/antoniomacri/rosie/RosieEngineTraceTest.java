@@ -1,6 +1,5 @@
 package com.github.antoniomacri.rosie;
 
-import com.sun.jna.ptr.IntByReference;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,8 +10,8 @@ import static org.hamcrest.number.OrderingComparison.greaterThan;
 
 public class RosieEngineTraceTest {
     private RosieEngine rosie;
-    private IntByReference net_any;
-    private IntByReference net_ip;
+    private int net_any;
+    private int net_ip;
 
     @Before
     public void init() {

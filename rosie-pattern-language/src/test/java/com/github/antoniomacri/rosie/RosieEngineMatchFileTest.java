@@ -1,6 +1,5 @@
 package com.github.antoniomacri.rosie;
 
-import com.sun.jna.ptr.IntByReference;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,8 +10,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RosieEngineMatchFileTest {
     private RosieEngine rosie;
-    private IntByReference net_any;
-    private IntByReference findall_net_any;
+    private int net_any;
+    private int findall_net_any;
 
     @Before
     public void init() {

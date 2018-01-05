@@ -1,12 +1,10 @@
 package com.github.antoniomacri.rosie;
 
-import com.sun.jna.ptr.IntByReference;
-
 public class CompilationResult {
-    public final IntByReference pat;
+    public final Integer pat;
     public final String errors;
 
-    public CompilationResult(IntByReference pat, String errors) {
+    public CompilationResult(Integer pat, String errors) {
         this.pat = pat;
         this.errors = errors;
     }

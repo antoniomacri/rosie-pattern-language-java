@@ -79,7 +79,7 @@ public class RosieEngine {
         if (pat.getValue() == 0) {
             return new CompilationResult(null, errors.toString());
         } else {
-            return new CompilationResult(pat, null);
+            return new CompilationResult(pat.getValue(), null);
         }
     }
 
@@ -117,13 +117,13 @@ public class RosieEngine {
         return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
     }
 
-    public MatchResult match(IntByReference Cpat, String input, int start, String encoder) {
-        if (Cpat.getValue() == 0) {
+    public MatchResult match(int Cpat, String input, int start, String encoder) {
+        if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
         RosieMatch Cmatch = new RosieMatch();
         RosieString Cinput = new_cstr(input);
-        int ok = LIB.rosie_match(engine, Cpat.getValue(), start, encoder, Cinput, Cmatch);
+        int ok = LIB.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
         if (ok != 0) {
             throw new RuntimeException("match() failed (please report this as a bug)");
         }
@@ -141,14 +141,14 @@ public class RosieEngine {
         return new MatchResult(Cmatch.data.toString(), left, abend, ttotal, tmatch);
     }
 
-    public TraceResult trace(IntByReference Cpat, String input, int start, String style) {
-        if (Cpat.getValue() == 0) {
+    public TraceResult trace(int Cpat, String input, int start, String style) {
+        if (Cpat == 0) {
             throw new RuntimeException("invalid compiled pattern");
         }
         IntByReference Cmatched = new IntByReference();
         RosieString Cinput = new_cstr(input);
         RosieString Ctrace = new_cstr();
-        int ok = LIB.rosie_trace(engine, Cpat.getValue(), start, style, Cinput, Cmatched, Ctrace);
+        int ok = LIB.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
         if (ok != 0) {
             throw new RuntimeException("trace() failed (please report this as a bug)");
         }
@@ -164,16 +164,16 @@ public class RosieEngine {
         return new TraceResult(matched, trace);
     }
 
-    public MatchFileResult matchfile(IntByReference Cpat, String encoder) {
+    public MatchFileResult matchfile(int Cpat, String encoder) {
         return matchfile(Cpat, encoder, null, null, null, false);
     }
 
-    public MatchFileResult matchfile(IntByReference Cpat, String encoder, String infile, String outfile, String errfile) {
+    public MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile) {
         return matchfile(Cpat, encoder, infile, outfile, errfile, false);
     }
 
-    public MatchFileResult matchfile(IntByReference Cpat, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
-        if (Cpat.getValue() == 0) {
+    public MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
+        if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
         IntByReference Ccin = new IntByReference();
@@ -181,7 +181,7 @@ public class RosieEngine {
         IntByReference Ccerr = new IntByReference();
         int wff = wholefile ? 1 : 0;
         RosieString Cerrmsg = new_cstr();
-        int ok = LIB.rosie_matchfile(engine, Cpat.getValue(), encoder, wff,
+        int ok = LIB.rosie_matchfile(engine, Cpat, encoder, wff,
                 infile != null ? infile : "",
                 outfile != null ? outfile : "",
                 errfile != null ? errfile : "",

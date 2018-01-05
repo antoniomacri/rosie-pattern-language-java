@@ -36,7 +36,7 @@ public class RosieEngineLoadCompileTest {
 
         CompilationResult compiled = rosie.compile("x.foo");
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
-        assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
+        assertThat("compiled.pat", compiled.pat, greaterThan(0));
         assertThat("compiled.errors", compiled.errors, is(nullValue()));
     }
 
@@ -44,19 +44,8 @@ public class RosieEngineLoadCompileTest {
     public void testCompilePattern() {
         CompilationResult compiled = rosie.compile("[:digit:]+");
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
-        assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
+        assertThat("compiled.pat", compiled.pat, greaterThan(0));
         assertThat("compiled.errors", compiled.errors, is(nullValue()));
-    }
-
-    @Test
-    public void testCompileDifferentAllocationsForDifferentPatterns() {
-        testLoad();
-
-        CompilationResult compiledFoo = rosie.compile("x.foo");
-        CompilationResult compiledDigit = rosie.compile("[:digit:]+");
-
-        assertThat("compiled.pat are different", compiledFoo.pat != compiledDigit.pat);
-        assertThat("compiled.pat are different", compiledFoo.pat.getPointer() != compiledDigit.pat.getPointer());
     }
 
     @Test
@@ -73,15 +62,6 @@ public class RosieEngineLoadCompileTest {
         Map firstError = (Map) errors.get(0);
         assertThat("first error message", firstError.get("message"), is(notNullValue()));
         assertThat("first error who", firstError.get("who"), is(equalTo("compiler")));
-    }
-
-    @Test
-    public void testCompileDifferentAllocationsForSamePattern() {
-        CompilationResult compiled1 = rosie.compile("[:digit:]+");
-        CompilationResult compiled2 = rosie.compile("[:digit:]+");
-
-        assertThat("compiled.pat are different", compiled1.pat != compiled2.pat);
-        assertThat("compiled.pat are different", compiled1.pat.getPointer() != compiled2.pat.getPointer());
     }
 
     @Test

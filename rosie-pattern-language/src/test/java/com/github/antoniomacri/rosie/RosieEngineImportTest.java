@@ -1,6 +1,5 @@
 package com.github.antoniomacri.rosie;
 
-import com.sun.jna.ptr.IntByReference;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,7 +42,7 @@ public class RosieEngineImportTest {
         CompilationResult compiled = rosie.compile("net.any");
 
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
-        assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
+        assertThat("compiled.pat", compiled.pat, greaterThan(0));
         assertThat("errors", compiled.errors, is(nullValue()));
     }
 
@@ -54,7 +53,7 @@ public class RosieEngineImportTest {
         CompilationResult compiled = rosie.compile("foobar.any");
 
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
-        assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
+        assertThat("compiled.pat", compiled.pat, greaterThan(0));
         assertThat("errors", compiled.errors, is(nullValue()));
     }
 
@@ -62,7 +61,7 @@ public class RosieEngineImportTest {
     public void testMatchOk() {
         rosie.importPackage("net");
         CompilationResult compiled = rosie.compile("net.any");
-        IntByReference net_any = compiled.pat;
+        int net_any = compiled.pat;
 
         MatchResult matchResult = rosie.match(net_any, "1.2.3.4", 1, "color");
 
@@ -73,7 +72,7 @@ public class RosieEngineImportTest {
     public void testMatchKo() {
         rosie.importPackage("net");
         CompilationResult compiled = rosie.compile("net.any");
-        IntByReference net_any = compiled.pat;
+        int net_any = compiled.pat;
         MatchResult matchResult = rosie.match(net_any, "Hello, world!", 1, "color");
 
         assertThat("match result", matchResult.data, is(nullValue()));
