@@ -23,7 +23,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberOk() throws IOException {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         MatchResult result = rosie.match(compiled.pat, "321", 2, "json");
         assertThat("matched string", result.data, is(notNullValue()));
@@ -43,7 +43,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberKo() {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         MatchResult result = rosie.match(compiled.pat, "xyz", 1, "json");
         assertThat("matched string", result.data, is(nullValue()));
@@ -56,7 +56,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixed() throws IOException {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         MatchResult result = rosie.match(compiled.pat, input, 1, "json");
@@ -77,7 +77,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixed2() throws IOException {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         MatchResult result = rosie.match(compiled.pat, input, 10, "json");
@@ -98,7 +98,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixedLine() {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         MatchResult result = rosie.match(compiled.pat, input, 1, "line");
@@ -113,7 +113,7 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixedColor() {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         MatchResult result = rosie.match(compiled.pat, input, 1, "color");

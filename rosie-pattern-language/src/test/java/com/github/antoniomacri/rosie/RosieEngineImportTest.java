@@ -40,7 +40,7 @@ public class RosieEngineImportTest {
     public void testImportAndCompile() {
         testImport();
 
-        RosieCompiled compiled = rosie.compile("net.any");
+        CompilationResult compiled = rosie.compile("net.any");
 
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
         assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
@@ -51,7 +51,7 @@ public class RosieEngineImportTest {
     public void testImportAndCompileWithAlias() {
         testImportWithAlias();
 
-        RosieCompiled compiled = rosie.compile("foobar.any");
+        CompilationResult compiled = rosie.compile("foobar.any");
 
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
         assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
@@ -61,7 +61,7 @@ public class RosieEngineImportTest {
     @Test
     public void testMatchOk() {
         rosie.importPackage("net");
-        RosieCompiled compiled = rosie.compile("net.any");
+        CompilationResult compiled = rosie.compile("net.any");
         IntByReference net_any = compiled.pat;
 
         MatchResult matchResult = rosie.match(net_any, "1.2.3.4", 1, "color");
@@ -72,7 +72,7 @@ public class RosieEngineImportTest {
     @Test
     public void testMatchKo() {
         rosie.importPackage("net");
-        RosieCompiled compiled = rosie.compile("net.any");
+        CompilationResult compiled = rosie.compile("net.any");
         IntByReference net_any = compiled.pat;
         MatchResult matchResult = rosie.match(net_any, "Hello, world!", 1, "color");
 

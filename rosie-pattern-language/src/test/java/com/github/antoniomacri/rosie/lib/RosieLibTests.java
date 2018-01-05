@@ -1,4 +1,4 @@
-package com.github.antoniomacri.rosie;
+package com.github.antoniomacri.rosie.lib;
 
 import com.sun.jna.Native;
 import org.junit.Before;

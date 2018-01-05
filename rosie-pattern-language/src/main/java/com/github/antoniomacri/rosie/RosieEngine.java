@@ -1,5 +1,8 @@
 package com.github.antoniomacri.rosie;
 
+import com.github.antoniomacri.rosie.lib.RosieLib;
+import com.github.antoniomacri.rosie.lib.RosieMatch;
+import com.github.antoniomacri.rosie.lib.RosieString;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -65,7 +68,7 @@ public class RosieEngine {
         return retvals.toString();
     }
 
-    public RosieCompiled compile(String exp) {
+    public CompilationResult compile(String exp) {
         RosieString errors = new_cstr();
         RosieString rosieExpression = new_cstr(exp);
         IntByReference pat = new IntByReference();
@@ -74,9 +77,9 @@ public class RosieEngine {
             throw new RuntimeException("compile() failed (please report this as a bug)");
         }
         if (pat.getValue() == 0) {
-            return new RosieCompiled(null, errors.toString());
+            return new CompilationResult(null, errors.toString());
         } else {
-            return new RosieCompiled(pat, null);
+            return new CompilationResult(pat, null);
         }
     }
 

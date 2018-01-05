@@ -18,9 +18,9 @@ public class RosieEngineMatchFileTest {
     public void init() {
         rosie = new RosieEngine();
         rosie.importPackage("net");
-        RosieCompiled compiledNetAny = rosie.compile("net.any");
+        CompilationResult compiledNetAny = rosie.compile("net.any");
         net_any = compiledNetAny.pat;
-        RosieCompiled compiledNetAllAny = rosie.compile("findall:net.any");
+        CompilationResult compiledNetAllAny = rosie.compile("findall:net.any");
         findall_net_any = compiledNetAllAny.pat;
     }
 

@@ -18,9 +18,9 @@ public class RosieEngineTraceTest {
     public void init() {
         rosie = new RosieEngine();
         rosie.importPackage("net");
-        RosieCompiled compiledNetAny = rosie.compile("net.any");
+        CompilationResult compiledNetAny = rosie.compile("net.any");
         net_any = compiledNetAny.pat;
-        RosieCompiled compiledNetIp = rosie.compile("net.ip");
+        CompilationResult compiledNetIp = rosie.compile("net.ip");
         net_ip = compiledNetIp.pat;
     }
 

@@ -1,4 +1,4 @@
-package com.github.antoniomacri.rosie;
+package com.github.antoniomacri.rosie.lib;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;

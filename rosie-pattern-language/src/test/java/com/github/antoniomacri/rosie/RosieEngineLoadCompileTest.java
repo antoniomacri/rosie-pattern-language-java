@@ -26,7 +26,7 @@ public class RosieEngineLoadCompileTest {
     public void testLoad() {
         LoadResult result = rosie.load("package x; foo = \"foo\"");
         assertThat(result.ok, is(1));
-        assertThat(result.pkgname, is(equalTo("x")));
+        assertThat(result.packageName, is(equalTo("x")));
         assertThat(result.errors, is(nullValue()));
     }
 
@@ -34,7 +34,7 @@ public class RosieEngineLoadCompileTest {
     public void testCompileFoo() {
         testLoad();
 
-        RosieCompiled compiled = rosie.compile("x.foo");
+        CompilationResult compiled = rosie.compile("x.foo");
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
         assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
         assertThat("compiled.errors", compiled.errors, is(nullValue()));
@@ -42,7 +42,7 @@ public class RosieEngineLoadCompileTest {
 
     @Test
     public void testCompilePattern() {
-        RosieCompiled compiled = rosie.compile("[:digit:]+");
+        CompilationResult compiled = rosie.compile("[:digit:]+");
         assertThat("compiled.pat", compiled.pat, is(notNullValue()));
         assertThat("compiled.pat", compiled.pat.getValue(), greaterThan(0));
         assertThat("compiled.errors", compiled.errors, is(nullValue()));
@@ -52,8 +52,8 @@ public class RosieEngineLoadCompileTest {
     public void testCompileDifferentAllocationsForDifferentPatterns() {
         testLoad();
 
-        RosieCompiled compiledFoo = rosie.compile("x.foo");
-        RosieCompiled compiledDigit = rosie.compile("[:digit:]+");
+        CompilationResult compiledFoo = rosie.compile("x.foo");
+        CompilationResult compiledDigit = rosie.compile("[:digit:]+");
 
         assertThat("compiled.pat are different", compiledFoo.pat != compiledDigit.pat);
         assertThat("compiled.pat are different", compiledFoo.pat.getPointer() != compiledDigit.pat.getPointer());
@@ -61,7 +61,7 @@ public class RosieEngineLoadCompileTest {
 
     @Test
     public void testCompileInvalidPattern() throws IOException {
-        RosieCompiled compiled = rosie.compile("[:foobar:]+");
+        CompilationResult compiled = rosie.compile("[:foobar:]+");
 
         assertThat("compiled.pat", compiled.pat, is(nullValue()));
 
@@ -77,8 +77,8 @@ public class RosieEngineLoadCompileTest {
 
     @Test
     public void testCompileDifferentAllocationsForSamePattern() {
-        RosieCompiled compiled1 = rosie.compile("[:digit:]+");
-        RosieCompiled compiled2 = rosie.compile("[:digit:]+");
+        CompilationResult compiled1 = rosie.compile("[:digit:]+");
+        CompilationResult compiled2 = rosie.compile("[:digit:]+");
 
         assertThat("compiled.pat are different", compiled1.pat != compiled2.pat);
         assertThat("compiled.pat are different", compiled1.pat.getPointer() != compiled2.pat.getPointer());
@@ -86,7 +86,7 @@ public class RosieEngineLoadCompileTest {
 
     @Test
     public void testCompileInvalidPatternNumInt() throws IOException {
-        RosieCompiled compiled = rosie.compile("num.int");
+        CompilationResult compiled = rosie.compile("num.int");
 
         assertThat("compiled.pat", compiled.pat, is(nullValue()));
 
