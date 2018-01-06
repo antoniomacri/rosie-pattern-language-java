@@ -7,7 +7,7 @@
 
     <groupId>com.github.antoniomacri</groupId>
     <artifactId>rosie-pattern-language-project</artifactId>
-    <version>1.0.0-alpha-6-next</version>
+    <version>1.0.0-alpha-6-1</version>
     <name>Rosie Pattern Language</name>
     <packaging>pom</packaging>
 
