@@ -7,11 +7,13 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
+import java.io.Closeable;
+
 
 /**
  * Create a Rosie pattern matching engine.
  */
-public class RosieEngine {
+public class RosieEngine implements Closeable {
     private RosieLib LIB = Native.loadLibrary("rosie", RosieLib.class);
 
 
@@ -203,6 +205,13 @@ public class RosieEngine {
         return new MatchFileResult(Ccin.getValue(), Ccout.getValue(), Ccerr.getValue());
     }
 
+    @Override
+    public void close() {
+        if (engine != Pointer.NULL) {
+            LIB.rosie_finalize(engine);
+        }
+    }
+
     /*
     def setlibpath(self, libpath):
         ok = lib.rosie_setlibpath_engine(self.engine, libpath)
@@ -230,15 +239,5 @@ public class RosieEngine {
         if ok != 0:
         raise RuntimeError ("set_alloc_limit() failed (please report this as a bug)");
     }
-
-    /*
-    def __del__(self):
-        if hasattr(self, 'engine') and (self.engine != ffi.NULL):
-            lib.rosie_finalize(self.engine)
-     *
-    public void __del__() {
-        if hasattr(self, 'engine') and(self.engine != ffi.NULL):
-        lib.rosie_finalize(self.engine)
-    }
-*/
+    */
 }
