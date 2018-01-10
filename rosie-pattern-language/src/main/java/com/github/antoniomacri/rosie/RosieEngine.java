@@ -51,48 +51,49 @@ public class RosieEngine implements Closeable {
 
 
     public RosieEngine() {
-        RosieString errors = new_cstr();
-        engine = RosieLib.INSTANCE.rosie_new(errors);
-        if (engine == Pointer.NULL) {
-            throw new RuntimeException(errors.toString());
+        try (RosieString errors = new_cstr()) {
+            engine = RosieLib.INSTANCE.rosie_new(errors);
+            if (engine == Pointer.NULL) {
+                throw new RuntimeException(errors.toString());
+            }
         }
     }
 
     public String config() {
-        RosieString retvals = new_cstr();
-        int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
-        if (ok != 0) {
-            throw new RuntimeException("config() failed (please report this as a bug)");
+        try (RosieString retvals = new_cstr()) {
+            int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
+            if (ok != 0) {
+                throw new RuntimeException("config() failed (please report this as a bug)");
+            }
+            return retvals.toString();
         }
-        return retvals.toString();
     }
 
     public CompilationResult compile(String exp) {
-        RosieString errors = new_cstr();
-        RosieString rosieExpression = new_cstr(exp);
-        IntByReference pat = new IntByReference();
-        int ok = RosieLib.INSTANCE.rosie_compile(engine, rosieExpression, pat, errors);
-        if (ok != 0) {
-            throw new RuntimeException("compile() failed (please report this as a bug)");
-        }
-        if (pat.getValue() == 0) {
-            return new CompilationResult(null, errors.toString());
-        } else {
-            return new CompilationResult(pat.getValue(), null);
+        try (RosieString errors = new_cstr(); RosieString rosieExpression = new_cstr(exp)) {
+            IntByReference pat = new IntByReference();
+            int ok = RosieLib.INSTANCE.rosie_compile(engine, rosieExpression, pat, errors);
+            if (ok != 0) {
+                throw new RuntimeException("compile() failed (please report this as a bug)");
+            }
+            if (pat.getValue() == 0) {
+                return new CompilationResult(null, errors.toString());
+            } else {
+                return new CompilationResult(pat.getValue(), null);
+            }
         }
     }
 
     public LoadResult load(String src) {
-        RosieString rosieSrc = new_cstr(src);
-        IntByReference ok = new IntByReference();
-        RosieString rosiePkgname = new_cstr();
-        RosieString errors = new_cstr();
-        int result = RosieLib.INSTANCE.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
-        if (result != 0) {
-            throw new RuntimeException("load() failed (please report this as a bug)");
+        try (RosieString rosieSrc = new_cstr(src); RosieString rosiePkgname = new_cstr(); RosieString errors = new_cstr()) {
+            IntByReference ok = new IntByReference();
+            int result = RosieLib.INSTANCE.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
+            if (result != 0) {
+                throw new RuntimeException("load() failed (please report this as a bug)");
+            }
+            String errorsString = errors.toString();
+            return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString.equals("{}") ? null : errorsString);
         }
-        String errorsString = errors.toString();
-        return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString.equals("{}") ? null : errorsString);
     }
 
     public ImportResult importPackage(String pkgname) {
@@ -100,67 +101,71 @@ public class RosieEngine implements Closeable {
     }
 
     public ImportResult importPackage(String pkgname, String as_name) {
-        RosieString Cerrs = new_cstr();
-        RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
-        RosieString Cpkgname = new_cstr(pkgname);
-        IntByReference Csuccess = new IntByReference();
-        int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
-        if (ok != 0) {
-            throw new RuntimeException("import() failed (please report this as a bug)");
+        try (RosieString Cerrs = new_cstr(); RosieString Cas_name = as_name != null ? new_cstr(as_name) : null; RosieString Cpkgname = new_cstr(pkgname)) {
+            IntByReference Csuccess = new IntByReference();
+            int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
+            if (ok != 0) {
+                throw new RuntimeException("import() failed (please report this as a bug)");
+            }
+            String actual_pkgname = Cpkgname.toString();
+            String errs = Cerrs.toString();
+            if ("{}".equals(errs)) {
+                errs = null;
+            }
+            return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
         }
-        String actual_pkgname = Cpkgname.toString();
-        String errs = Cerrs.toString();
-        if ("{}".equals(errs)) {
-            errs = null;
-        }
-        return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
     }
 
     public MatchResult match(int Cpat, String input, int start, String encoder) {
         if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
-        RosieMatch Cmatch = new RosieMatch();
-        RosieString Cinput = new_cstr(input);
-        int ok = RosieLib.INSTANCE.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
-        if (ok != 0) {
-            throw new RuntimeException("match() failed (please report this as a bug)");
-        }
-        int left = Cmatch.leftover;
-        int abend = Cmatch.abend;
-        int ttotal = Cmatch.ttotal;
-        int tmatch = Cmatch.tmatch;
-        if (Cmatch.data.ptr == null) {
-            if (Cmatch.data.len.intValue() == 0) {
-                return new MatchResult(null, left, abend, ttotal, tmatch);
-            } else if (Cmatch.data.len.intValue() == 1) {
-                throw new IllegalStateException("invalid compiled pattern (already freed?)");
+
+        try (RosieString Cinput = new_cstr(input)) {
+            RosieMatch Cmatch = new RosieMatch();
+            int ok = RosieLib.INSTANCE.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
+            if (ok != 0) {
+                throw new RuntimeException("match() failed (please report this as a bug)");
             }
+
+            int left = Cmatch.leftover;
+            int abend = Cmatch.abend;
+            int ttotal = Cmatch.ttotal;
+            int tmatch = Cmatch.tmatch;
+            if (Cmatch.data.ptr == null) {
+                if (Cmatch.data.len.intValue() == 0) {
+                    return new MatchResult(null, left, abend, ttotal, tmatch);
+                } else if (Cmatch.data.len.intValue() == 1) {
+                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
+                }
+            }
+            return new MatchResult(Cmatch.data.toString(), left, abend, ttotal, tmatch);
         }
-        return new MatchResult(Cmatch.data.toString(), left, abend, ttotal, tmatch);
     }
 
     public TraceResult trace(int Cpat, String input, int start, String style) {
         if (Cpat == 0) {
             throw new RuntimeException("invalid compiled pattern");
         }
-        IntByReference Cmatched = new IntByReference();
-        RosieString Cinput = new_cstr(input);
-        RosieString Ctrace = new_cstr();
-        int ok = RosieLib.INSTANCE.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
-        if (ok != 0) {
-            throw new RuntimeException("trace() failed (please report this as a bug)");
-        }
-        if (Ctrace.ptr == null) {
-            if (Ctrace.len.intValue() == 2) {
-                throw new IllegalArgumentException("invalid trace style");
-            } else if (Ctrace.len.intValue() == 1) {
-                throw new IllegalStateException("invalid compiled pattern (already freed?)");
+
+        try (RosieString Cinput = new_cstr(input); RosieString Ctrace = new_cstr()) {
+            IntByReference Cmatched = new IntByReference();
+            int ok = RosieLib.INSTANCE.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
+            if (ok != 0) {
+                throw new RuntimeException("trace() failed (please report this as a bug)");
             }
+
+            if (Ctrace.ptr == null) {
+                if (Ctrace.len.intValue() == 2) {
+                    throw new IllegalArgumentException("invalid trace style");
+                } else if (Ctrace.len.intValue() == 1) {
+                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
+                }
+            }
+            boolean matched = Cmatched.getValue() != 0;
+            String trace = Ctrace.toString();
+            return new TraceResult(matched, trace);
         }
-        boolean matched = Cmatched.getValue() != 0;
-        String trace = Ctrace.toString();
-        return new TraceResult(matched, trace);
     }
 
     public MatchFileResult matchfile(int Cpat, String encoder) {
@@ -175,31 +180,36 @@ public class RosieEngine implements Closeable {
         if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
-        IntByReference Ccin = new IntByReference();
-        IntByReference Ccout = new IntByReference();
-        IntByReference Ccerr = new IntByReference();
-        int wff = wholefile ? 1 : 0;
-        RosieString Cerrmsg = new_cstr();
-        int ok = RosieLib.INSTANCE.rosie_matchfile(engine, Cpat, encoder, wff,
-                infile != null ? infile : "",
-                outfile != null ? outfile : "",
-                errfile != null ? errfile : "",
-                Ccin, Ccout, Ccerr, Cerrmsg);
-        if (ok != 0) {
-            throw new RuntimeException("matchfile() failed: " + Cerrmsg.toString());
-        }
-        if (Ccin.getValue() == -1) { // Error occurred
-            if (Ccout.getValue() == 1) {
-                throw new IllegalStateException("invalid compiled pattern (already freed?)");
-            } else if (Ccout.getValue() == 2) {
-                throw new IllegalArgumentException("invalid encoder");
-            } else if (Ccout.getValue() == 3) {
-                throw new RuntimeException(Cerrmsg.toString()); // file i/o error
-            } else {
-                throw new RuntimeException("unknown error caused matchfile to fail");
+
+        try (RosieString Cerrmsg = new_cstr()) {
+            IntByReference Ccin = new IntByReference();
+            IntByReference Ccout = new IntByReference();
+            IntByReference Ccerr = new IntByReference();
+            int wff = wholefile ? 1 : 0;
+
+            int ok = RosieLib.INSTANCE.rosie_matchfile(engine, Cpat, encoder, wff,
+                    infile != null ? infile : "",
+                    outfile != null ? outfile : "",
+                    errfile != null ? errfile : "",
+                    Ccin, Ccout, Ccerr, Cerrmsg);
+
+            if (ok != 0) {
+                throw new RuntimeException("matchfile() failed: " + Cerrmsg.toString());
             }
+            if (Ccin.getValue() == -1) { // Error occurred
+                if (Ccout.getValue() == 1) {
+                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
+                } else if (Ccout.getValue() == 2) {
+                    throw new IllegalArgumentException("invalid encoder");
+                } else if (Ccout.getValue() == 3) {
+                    throw new RuntimeException(Cerrmsg.toString()); // file i/o error
+                } else {
+                    throw new RuntimeException("unknown error caused matchfile to fail");
+                }
+            }
+
+            return new MatchFileResult(Ccin.getValue(), Ccout.getValue(), Ccerr.getValue());
         }
-        return new MatchFileResult(Ccin.getValue(), Ccout.getValue(), Ccerr.getValue());
     }
 
     @Override

@@ -22,7 +22,7 @@ import java.util.List;
  * typedef struct rosie_string str;
  * </pre>
  */
-public class RosieString extends Structure {
+public class RosieString extends Structure implements AutoCloseable {
     public static class ByValue extends RosieString implements Structure.ByValue {
     }
 
@@ -33,6 +33,19 @@ public class RosieString extends Structure {
     protected List<String> getFieldOrder() {
         return Arrays.asList("len", "ptr");
     }
+
+
+    /**
+     * Properly dispose of native memory when this object is closed.
+     */
+    @Override
+    public void close() {
+        if (ptr != null) {
+            RosieLib.INSTANCE.rosie_free_string_ptr(this);
+            ptr = null;
+        }
+    }
+
 
     @Override
     public String toString() {
