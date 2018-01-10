@@ -1,11 +1,15 @@
 package com.github.antoniomacri.rosie.lib;
 
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 
 public interface RosieLib extends Library {
+    RosieLib INSTANCE = Native.loadLibrary("rosie", RosieLib.class);
+
+
     // str rosie_new_string(byte_ptr msg, size_t len);
     RosieString.ByValue rosie_new_string(String msg, int len);
 

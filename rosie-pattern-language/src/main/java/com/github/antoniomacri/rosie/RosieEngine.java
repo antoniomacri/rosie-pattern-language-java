@@ -3,7 +3,6 @@ package com.github.antoniomacri.rosie;
 import com.github.antoniomacri.rosie.lib.RosieLib;
 import com.github.antoniomacri.rosie.lib.RosieMatch;
 import com.github.antoniomacri.rosie.lib.RosieString;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
@@ -14,16 +13,14 @@ import java.io.Closeable;
  * Create a Rosie pattern matching engine.
  */
 public class RosieEngine implements Closeable {
-    private RosieLib LIB = Native.loadLibrary("rosie", RosieLib.class);
-
 
     private RosieString new_cstr() {
-        RosieString str = LIB.rosie_new_string_ptr("", 0);
+        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr("", 0);
         return str;
     }
 
     private RosieString new_cstr(String expression) {
-        RosieString str = LIB.rosie_new_string_ptr(expression, expression.length());
+        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr(expression, expression.length());
         return str;
     }
 
@@ -55,7 +52,7 @@ public class RosieEngine implements Closeable {
 
     public RosieEngine() {
         RosieString errors = new_cstr();
-        engine = LIB.rosie_new(errors);
+        engine = RosieLib.INSTANCE.rosie_new(errors);
         if (engine == Pointer.NULL) {
             throw new RuntimeException(errors.toString());
         }
@@ -63,7 +60,7 @@ public class RosieEngine implements Closeable {
 
     public String config() {
         RosieString retvals = new_cstr();
-        int ok = LIB.rosie_config(engine, retvals);
+        int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
         if (ok != 0) {
             throw new RuntimeException("config() failed (please report this as a bug)");
         }
@@ -74,7 +71,7 @@ public class RosieEngine implements Closeable {
         RosieString errors = new_cstr();
         RosieString rosieExpression = new_cstr(exp);
         IntByReference pat = new IntByReference();
-        int ok = LIB.rosie_compile(engine, rosieExpression, pat, errors);
+        int ok = RosieLib.INSTANCE.rosie_compile(engine, rosieExpression, pat, errors);
         if (ok != 0) {
             throw new RuntimeException("compile() failed (please report this as a bug)");
         }
@@ -90,7 +87,7 @@ public class RosieEngine implements Closeable {
         IntByReference ok = new IntByReference();
         RosieString rosiePkgname = new_cstr();
         RosieString errors = new_cstr();
-        int result = LIB.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
+        int result = RosieLib.INSTANCE.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
         if (result != 0) {
             throw new RuntimeException("load() failed (please report this as a bug)");
         }
@@ -107,7 +104,7 @@ public class RosieEngine implements Closeable {
         RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
         RosieString Cpkgname = new_cstr(pkgname);
         IntByReference Csuccess = new IntByReference();
-        int ok = LIB.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
+        int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
         if (ok != 0) {
             throw new RuntimeException("import() failed (please report this as a bug)");
         }
@@ -125,7 +122,7 @@ public class RosieEngine implements Closeable {
         }
         RosieMatch Cmatch = new RosieMatch();
         RosieString Cinput = new_cstr(input);
-        int ok = LIB.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
+        int ok = RosieLib.INSTANCE.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
         if (ok != 0) {
             throw new RuntimeException("match() failed (please report this as a bug)");
         }
@@ -150,7 +147,7 @@ public class RosieEngine implements Closeable {
         IntByReference Cmatched = new IntByReference();
         RosieString Cinput = new_cstr(input);
         RosieString Ctrace = new_cstr();
-        int ok = LIB.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
+        int ok = RosieLib.INSTANCE.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
         if (ok != 0) {
             throw new RuntimeException("trace() failed (please report this as a bug)");
         }
@@ -183,7 +180,7 @@ public class RosieEngine implements Closeable {
         IntByReference Ccerr = new IntByReference();
         int wff = wholefile ? 1 : 0;
         RosieString Cerrmsg = new_cstr();
-        int ok = LIB.rosie_matchfile(engine, Cpat, encoder, wff,
+        int ok = RosieLib.INSTANCE.rosie_matchfile(engine, Cpat, encoder, wff,
                 infile != null ? infile : "",
                 outfile != null ? outfile : "",
                 errfile != null ? errfile : "",
@@ -208,7 +205,7 @@ public class RosieEngine implements Closeable {
     @Override
     public void close() {
         if (engine != Pointer.NULL) {
-            LIB.rosie_finalize(engine);
+            RosieLib.INSTANCE.rosie_finalize(engine);
         }
     }
 
