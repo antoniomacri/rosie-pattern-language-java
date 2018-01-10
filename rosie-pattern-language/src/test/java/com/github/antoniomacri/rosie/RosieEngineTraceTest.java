@@ -1,5 +1,6 @@
 package com.github.antoniomacri.rosie;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +22,11 @@ public class RosieEngineTraceTest {
         net_any = compiledNetAny.pat;
         CompilationResult compiledNetIp = rosie.compile("net.ip");
         net_ip = compiledNetIp.pat;
+    }
+
+    @After
+    public void close() {
+        rosie.close();
     }
 
 

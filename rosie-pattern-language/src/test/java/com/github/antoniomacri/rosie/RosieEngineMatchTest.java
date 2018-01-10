@@ -1,6 +1,7 @@
 package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,6 +19,11 @@ public class RosieEngineMatchTest {
     @Before
     public void init() {
         rosie = new RosieEngine();
+    }
+
+    @After
+    public void close() {
+        rosie.close();
     }
 
 

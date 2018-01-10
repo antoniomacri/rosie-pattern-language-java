@@ -1,5 +1,6 @@
 package com.github.antoniomacri.rosie;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +22,11 @@ public class RosieEngineMatchFileTest {
         net_any = compiledNetAny.pat;
         CompilationResult compiledNetAllAny = rosie.compile("findall:net.any");
         findall_net_any = compiledNetAllAny.pat;
+    }
+
+    @After
+    public void close() {
+        rosie.close();
     }
 
 
