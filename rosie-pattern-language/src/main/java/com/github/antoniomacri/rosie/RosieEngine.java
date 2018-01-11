@@ -101,18 +101,35 @@ public class RosieEngine implements Closeable {
     }
 
     public ImportResult importPackage(String pkgname, String as_name) {
-        try (RosieString Cerrs = new_cstr(); RosieString Cas_name = as_name != null ? new_cstr(as_name) : null; RosieString Cpkgname = new_cstr(pkgname)) {
+        try (RosieString Cerrs = new_cstr(); RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
+             RosieString Cpkgname = new_cstr(pkgname); RosieString Cactual_pkgname = new_cstr()) {
             IntByReference Csuccess = new IntByReference();
-            int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cerrs);
+            int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cactual_pkgname, Cerrs);
             if (ok != 0) {
                 throw new RuntimeException("import() failed (please report this as a bug)");
             }
-            String actual_pkgname = Cpkgname.toString();
+            String actual_pkgname = Cactual_pkgname.ptr != null ? Cactual_pkgname.toString() : null;
             String errs = Cerrs.toString();
             if ("{}".equals(errs)) {
                 errs = null;
             }
             return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
+        }
+    }
+
+    public LoadResult loadfile(String fn) {
+        try (RosieString Cerrs = new_cstr(); RosieString Cfn = new_cstr(fn); RosieString Cpkgname = new_cstr()) {
+            IntByReference Csuccess = new IntByReference();
+            int ok = RosieLib.INSTANCE.rosie_loadfile(engine, Csuccess, Cfn, Cpkgname, Cerrs);
+            if (ok != 0) {
+                throw new RuntimeException("loadfile() failed (please report this as a bug)");
+            }
+            String errs = Cerrs.toString();
+            if ("{}".equals(errs)) {
+                errs = null;
+            }
+            String pkgname = Cpkgname.toString();
+            return new LoadResult(Csuccess.getValue(), pkgname, errs);
         }
     }
 
