@@ -18,7 +18,7 @@ public class RosieEngineLoadfileTest {
 
     @Test
     public void testLoad() {
-        LoadResult result = rosie.loadfile("test.rpl");
+        LoadResult result = rosie.loadfile("../rosie-pattern-language-native/submodule/src/librosie/python/test.rpl");
         assertThat(result.ok, is(1));
         assertThat(result.packageName, is(equalTo("test")));
         assertThat(result.errors, is(nullValue()));

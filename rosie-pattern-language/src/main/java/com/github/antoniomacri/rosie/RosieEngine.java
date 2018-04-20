@@ -1,5 +1,7 @@
 package com.github.antoniomacri.rosie;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.antoniomacri.rosie.lib.RosieLib;
 import com.github.antoniomacri.rosie.lib.RosieMatch;
 import com.github.antoniomacri.rosie.lib.RosieString;
@@ -7,23 +9,16 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
  * Create a Rosie pattern matching engine.
  */
 public class RosieEngine implements Closeable {
-
-    private RosieString new_cstr() {
-        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr("", 0);
-        return str;
-    }
-
-    private RosieString new_cstr(String expression) {
-        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr(expression, expression.length());
-        return str;
-    }
-
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   /*
     # Problem: Can't make use of RosieLibd-level defaults because we create a new RosieLibd instance for every engine.
@@ -51,7 +46,7 @@ public class RosieEngine implements Closeable {
 
 
     public RosieEngine() {
-        try (RosieString errors = new_cstr()) {
+        try (RosieString errors = RosieString.create()) {
             engine = RosieLib.INSTANCE.rosie_new(errors);
             if (engine == Pointer.NULL) {
                 throw new RuntimeException(errors.toString());
@@ -60,7 +55,7 @@ public class RosieEngine implements Closeable {
     }
 
     public String config() {
-        try (RosieString retvals = new_cstr()) {
+        try (RosieString retvals = RosieString.create()) {
             int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
             if (ok != 0) {
                 throw new RuntimeException("config() failed (please report this as a bug)");
@@ -70,29 +65,25 @@ public class RosieEngine implements Closeable {
     }
 
     public CompilationResult compile(String exp) {
-        try (RosieString errors = new_cstr(); RosieString rosieExpression = new_cstr(exp)) {
+        try (RosieString errors = RosieString.create(); RosieString rosieExpression = RosieString.create(exp)) {
             IntByReference pat = new IntByReference();
             int ok = RosieLib.INSTANCE.rosie_compile(engine, rosieExpression, pat, errors);
             if (ok != 0) {
                 throw new RuntimeException("compile() failed (please report this as a bug)");
             }
-            if (pat.getValue() == 0) {
-                return new CompilationResult(null, errors.toString());
-            } else {
-                return new CompilationResult(pat.getValue(), null);
-            }
+            return new CompilationResult(pat.getValue() != 0 ? pat.getValue() : null, errors.toString());
         }
     }
 
     public LoadResult load(String src) {
-        try (RosieString rosieSrc = new_cstr(src); RosieString rosiePkgname = new_cstr(); RosieString errors = new_cstr()) {
+        try (RosieString rosieSrc = RosieString.create(src); RosieString rosiePkgname = RosieString.create(); RosieString errors = RosieString.create()) {
             IntByReference ok = new IntByReference();
             int result = RosieLib.INSTANCE.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
             if (result != 0) {
                 throw new RuntimeException("load() failed (please report this as a bug)");
             }
             String errorsString = errors.toString();
-            return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString.equals("{}") ? null : errorsString);
+            return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString);
         }
     }
 
@@ -101,33 +92,27 @@ public class RosieEngine implements Closeable {
     }
 
     public ImportResult importPackage(String pkgname, String as_name) {
-        try (RosieString Cerrs = new_cstr(); RosieString Cas_name = as_name != null ? new_cstr(as_name) : null;
-             RosieString Cpkgname = new_cstr(pkgname); RosieString Cactual_pkgname = new_cstr()) {
+        try (RosieString Cerrs = RosieString.create(); RosieString Cas_name = as_name != null ? RosieString.create(as_name) : null;
+             RosieString Cpkgname = RosieString.create(pkgname); RosieString Cactual_pkgname = RosieString.create()) {
             IntByReference Csuccess = new IntByReference();
             int ok = RosieLib.INSTANCE.rosie_import(engine, Csuccess, Cpkgname, Cas_name, Cactual_pkgname, Cerrs);
             if (ok != 0) {
                 throw new RuntimeException("import() failed (please report this as a bug)");
             }
-            String actual_pkgname = Cactual_pkgname.ptr != null ? Cactual_pkgname.toString() : null;
+            String actual_pkgname = Cactual_pkgname.toString();
             String errs = Cerrs.toString();
-            if ("{}".equals(errs)) {
-                errs = null;
-            }
             return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
         }
     }
 
     public LoadResult loadfile(String fn) {
-        try (RosieString Cerrs = new_cstr(); RosieString Cfn = new_cstr(fn); RosieString Cpkgname = new_cstr()) {
+        try (RosieString Cerrs = RosieString.create(); RosieString Cfn = RosieString.create(fn); RosieString Cpkgname = RosieString.create()) {
             IntByReference Csuccess = new IntByReference();
             int ok = RosieLib.INSTANCE.rosie_loadfile(engine, Csuccess, Cfn, Cpkgname, Cerrs);
             if (ok != 0) {
                 throw new RuntimeException("loadfile() failed (please report this as a bug)");
             }
             String errs = Cerrs.toString();
-            if ("{}".equals(errs)) {
-                errs = null;
-            }
             String pkgname = Cpkgname.toString();
             return new LoadResult(Csuccess.getValue(), pkgname, errs);
         }
@@ -138,7 +123,7 @@ public class RosieEngine implements Closeable {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
 
-        try (RosieString Cinput = new_cstr(input)) {
+        try (RosieString Cinput = RosieString.create(input)) {
             RosieMatch Cmatch = new RosieMatch();
             int ok = RosieLib.INSTANCE.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
             if (ok != 0) {
@@ -153,6 +138,10 @@ public class RosieEngine implements Closeable {
                 if (Cmatch.data.len.intValue() == 0) {
                     return new MatchResult(null, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 1) {
+                    return new MatchResult(/* FIXME: what does True mean? */"", left, abend, ttotal, tmatch);
+                } else if (Cmatch.data.len.intValue() == 2) {
+                    throw new IllegalArgumentException("invalid output encoder");
+                } else if (Cmatch.data.len.intValue() == 4) {
                     throw new IllegalStateException("invalid compiled pattern (already freed?)");
                 }
             }
@@ -165,7 +154,7 @@ public class RosieEngine implements Closeable {
             throw new RuntimeException("invalid compiled pattern");
         }
 
-        try (RosieString Cinput = new_cstr(input); RosieString Ctrace = new_cstr()) {
+        try (RosieString Cinput = RosieString.create(input); RosieString Ctrace = RosieString.create()) {
             IntByReference Cmatched = new IntByReference();
             int ok = RosieLib.INSTANCE.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
             if (ok != 0) {
@@ -198,7 +187,7 @@ public class RosieEngine implements Closeable {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
 
-        try (RosieString Cerrmsg = new_cstr()) {
+        try (RosieString Cerrmsg = RosieString.create()) {
             IntByReference Ccin = new IntByReference();
             IntByReference Ccout = new IntByReference();
             IntByReference Ccerr = new IntByReference();
@@ -214,12 +203,12 @@ public class RosieEngine implements Closeable {
                 throw new RuntimeException("matchfile() failed: " + Cerrmsg.toString());
             }
             if (Ccin.getValue() == -1) { // Error occurred
-                if (Ccout.getValue() == 1) {
-                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
-                } else if (Ccout.getValue() == 2) {
+                if (Ccout.getValue() == 2) {
                     throw new IllegalArgumentException("invalid encoder");
                 } else if (Ccout.getValue() == 3) {
                     throw new RuntimeException(Cerrmsg.toString()); // file i/o error
+                } else if (Ccout.getValue() == 4) {
+                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
                 } else {
                     throw new RuntimeException("unknown error caused matchfile to fail");
                 }
@@ -229,39 +218,115 @@ public class RosieEngine implements Closeable {
         }
     }
 
+
+    public ReadRcFileResult readRcFile(String filename) throws IOException {
+        IntByReference Cfile_exists = new IntByReference();
+        RosieString filenameArg = filename == null ? RosieString.create() : RosieString.create(filename);
+        RosieString Coptions = RosieString.create();
+        RosieString Cmessages = RosieString.create();
+        int ok = RosieLib.INSTANCE.rosie_read_rcfile(engine, filenameArg, Cfile_exists, Coptions, Cmessages);
+        if (ok != 0) {
+            throw new RuntimeException("read_rcfile() failed (please report this as a bug)");
+        }
+        String messages = Cmessages.toString();
+        List<String> messagesList;
+        if (messages != null && !messages.isEmpty()) {
+            messagesList = OBJECT_MAPPER.readValue(messages, new TypeReference<List<String>>() {
+            });
+        } else {
+            messagesList = Collections.emptyList();
+        }
+        if (Cfile_exists.getValue() == 0) {
+            return new ReadRcFileResult(false, null, messagesList);
+        }
+        // else: file existed and was read
+        String options = Coptions.toString();
+        if (options != null && !options.isEmpty()) {
+            List<KeyValue> optionsList = OBJECT_MAPPER.readValue(options, new TypeReference<List<KeyValue>>() {
+            });
+            return new ReadRcFileResult(true, optionsList, messagesList);
+        }
+        // else: file existed, but some problems processing it
+        return new ReadRcFileResult(true, null, messagesList);
+    }
+
+    public ExecuteRcFileResult executeRcFile(String filename) throws IOException {
+        IntByReference Cfile_exists = new IntByReference();
+        IntByReference Cno_errors = new IntByReference();
+        RosieString filenameArg = filename == null ? RosieString.create() : RosieString.create(filename);
+        RosieString Cmessages = RosieString.create();
+        int ok = RosieLib.INSTANCE.rosie_execute_rcfile(engine, filenameArg, Cfile_exists, Cno_errors, Cmessages);
+        if (ok != 0) {
+            throw new RuntimeException("execute_rcfile() failed (please report this as a bug)");
+        }
+        String messages = Cmessages.toString();
+        List<String> messagesList;
+        if (messages != null && !messages.isEmpty()) {
+            messagesList = OBJECT_MAPPER.readValue(messages, new TypeReference<List<String>>() {
+            });
+        } else {
+            messagesList = Collections.emptyList();
+        }
+        if (Cfile_exists.getValue() == 0) {
+            return new ExecuteRcFileResult(false, false, messagesList);
+        }
+        // else: file existed
+        if (Cno_errors.getValue() == 1) {
+            return new ExecuteRcFileResult(true, true, messagesList);
+        }
+        // else: some problems processing it
+        return new ExecuteRcFileResult(false, true, messagesList);
+    }
+
+
+    public String getLibpath() {
+        RosieString libpathArg = RosieString.create();
+        int ok = RosieLib.INSTANCE.rosie_libpath(engine, libpathArg);
+        if (ok != 0) {
+            throw new RuntimeException("libpath() failed (please report this as a bug)");
+        }
+        return libpathArg.toString();
+    }
+
+
+    public void setLibpath(String libpath) {
+        RosieString libpathArg = RosieString.create(libpath);
+        int ok = RosieLib.INSTANCE.rosie_libpath(engine, libpathArg);
+        if (ok != 0) {
+            throw new RuntimeException("libpath() failed (please report this as a bug)");
+        }
+    }
+
+    public AllocLimitResult getAllocLimit() {
+        IntByReference limit_arg = new IntByReference();
+        IntByReference usage_arg = new IntByReference();
+        limit_arg.setValue(-1); // query
+        int ok = RosieLib.INSTANCE.rosie_alloc_limit(engine, limit_arg, usage_arg);
+        if (ok != 0) {
+            throw new RuntimeException("alloc_limit() failed (please report this as a bug)");
+        }
+        return new AllocLimitResult(limit_arg.getValue(), usage_arg.getValue());
+    }
+
+    public AllocLimitResult setAllocLimit(Integer newLimit) {
+        IntByReference limit_arg = new IntByReference();
+        IntByReference usage_arg = new IntByReference();
+        if (newLimit != 0 && newLimit < 8192) {
+            throw new IllegalArgumentException("new allocation limit must be 8192 KB or higher (or zero for unlimited)");
+        }
+        limit_arg.setValue(newLimit);
+        int ok = RosieLib.INSTANCE.rosie_alloc_limit(engine, limit_arg, usage_arg);
+        if (ok != 0) {
+            throw new RuntimeException("alloc_limit() failed (please report this as a bug)");
+        }
+        return new AllocLimitResult(limit_arg.getValue(), usage_arg.getValue());
+    }
+
+
     @Override
     public void close() {
         if (engine != Pointer.NULL) {
             RosieLib.INSTANCE.rosie_finalize(engine);
         }
     }
-
-    /*
-    def setlibpath(self, libpath):
-        ok = lib.rosie_setlibpath_engine(self.engine, libpath)
-        if ok != 0:
-            raise RuntimeError("setpath() failed (please report this as a bug)")
-     *
-    public void setlibpath(self, libpath) {
-        ok = lib.rosie_setlibpath_engine(self.engine, libpath)
-        if ok != 0:
-        raise RuntimeError ("setpath() failed (please report this as a bug)")
-    }
-
-    /*
-    def set_alloc_limit(self, newlimit):
-        if (newlimit != 0) and (newlimit < 10):
-            raise ValueError("new allocation limit must be 10 MB or higher (or zero for unlimited)")
-        ok = lib.rosie_set_alloc_limit(self.engine, newlimit)
-        if ok != 0:
-            raise RuntimeError("set_alloc_limit() failed (please report this as a bug)")
-     *
-    public void set_alloc_limit(self, newlimit) {
-        if (newlimit != 0) and(newlimit < 10):
-        raise ValueError ("new allocation limit must be 10 MB or higher (or zero for unlimited)")
-        ok = lib.rosie_set_alloc_limit(self.engine, newlimit)
-        if ok != 0:
-        raise RuntimeError ("set_alloc_limit() failed (please report this as a bug)");
-    }
-    */
 }

@@ -118,6 +118,21 @@ public class RosieEngineMatchTest {
     }
 
     @Test
+    public void testMatchNumberMixedBool() {
+        CompilationResult compiled = rosie.compile("[:digit:]+");
+
+        String input = "889900112233445566778899100101102103104105106107108109110xyz";
+        MatchResult result = rosie.match(compiled.pat, input, 1, "bool");
+        assertThat("matched string", result.data, is(notNullValue()));
+        assertThat("matched string", result.data, is(""));  // FIXME: what does True mean?
+
+        assertThat("leftover", result.leftover, is(equalTo(3)));
+        assertThat("abend", result.abend, is(equalTo(0)));
+        assertThat("ttotal", result.ttotal, is(greaterThan(0)));
+        assertThat("tmatch", result.tmatch, is(greaterThan(0)));
+    }
+
+    @Test
     public void testMatchNumberMixedColor() {
         CompilationResult compiled = rosie.compile("[:digit:]+");
 
@@ -132,5 +147,13 @@ public class RosieEngineMatchTest {
         assertThat("abend", result.abend, is(equalTo(0)));
         assertThat("ttotal", result.ttotal, is(greaterThan(0)));
         assertThat("tmatch", result.tmatch, is(greaterThan(0)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMatchInvalidEncoderName() {
+        CompilationResult compiled = rosie.compile("[:digit:]+");
+
+        String input = "889900112233445566778899100101102103104105106107108109110xyz";
+        rosie.match(compiled.pat, input, 1, "this_is_not_a_valid_encoder_name");
     }
 }

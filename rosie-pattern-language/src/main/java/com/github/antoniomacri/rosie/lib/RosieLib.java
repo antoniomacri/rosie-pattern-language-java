@@ -35,11 +35,11 @@ public interface RosieLib extends Library {
     // void rosie_finalize(Engine *e);
     void rosie_finalize(Pointer e);
 
-    // int rosie_setlibpath_engine(Engine *e, char *newpath);
-    int rosie_setlibpath_engine(Pointer e, String newpath);
+    // int rosie_libpath(Engine *e, str *newpath);
+    int rosie_libpath(Pointer e, RosieString newpath);
 
-    // int rosie_set_alloc_limit(Engine *e, int newlimit);
-    int rosie_set_alloc_limit(Pointer e, int newlimit);
+    // int rosie_alloc_limit(Engine *e, int *newlimit, int *usage);
+    int rosie_alloc_limit(Pointer e, IntByReference newlimit, IntByReference usage);
 
     // int rosie_config(Engine *e, str *retvals);
     int rosie_config(Pointer e, RosieString retvals);
@@ -74,4 +74,10 @@ public interface RosieLib extends Library {
 
     // int rosie_import(Engine *e, int *ok, str *pkgname, str *as, str *actual_pkgname, str *messages);
     int rosie_import(Pointer e, IntByReference ok, RosieString pkgname, RosieString as, RosieString actual_pkgname, RosieString messages);
+
+    // int rosie_read_rcfile(Engine *e, str *filename, int *file_exists, str *options, str *messages);
+    int rosie_read_rcfile(Pointer e, RosieString filename, IntByReference file_exists, RosieString options, RosieString messages);
+
+    // int rosie_execute_rcfile(Engine *e, str *filename, int *file_exists, int *no_errors, str *messages);
+    int rosie_execute_rcfile(Pointer e, RosieString filename, IntByReference file_exists, IntByReference no_errors, RosieString messages);
 }

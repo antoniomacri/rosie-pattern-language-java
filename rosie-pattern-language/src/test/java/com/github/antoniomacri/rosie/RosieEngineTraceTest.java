@@ -32,7 +32,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAny() {
-        TraceResult traceResult = rosie.trace(net_any, "1.2", 1, "condensed");
+        TraceResult traceResult = rosie.trace(net_any, "1.2.3", 1, "condensed");
         assertThat(traceResult.matched, is(equalTo(true)));
         assertThat(traceResult.trace, is(notNullValue()));
         assertThat(traceResult.trace.length(), is(greaterThan(0)));
@@ -40,7 +40,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetIp() {
-        TraceResult traceResult = rosie.trace(net_ip, "1.2", 1, "condensed");
+        TraceResult traceResult = rosie.trace(net_ip, "1.2.3", 1, "condensed");
         assertThat(traceResult.matched, is(equalTo(false)));
         assertThat(traceResult.trace, is(notNullValue()));
         assertThat(traceResult.trace.length(), is(greaterThan(0)));

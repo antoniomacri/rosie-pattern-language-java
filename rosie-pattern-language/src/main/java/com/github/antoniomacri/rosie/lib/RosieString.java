@@ -35,6 +35,17 @@ public class RosieString extends Structure implements AutoCloseable {
     }
 
 
+    public static RosieString create() {
+        RosieString str = new RosieString();
+        return str;
+    }
+
+    public static RosieString create(String expression) {
+        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr(expression, expression.length());
+        return str;
+    }
+
+
     /**
      * Properly dispose of native memory when this object is closed.
      */
@@ -49,6 +60,6 @@ public class RosieString extends Structure implements AutoCloseable {
 
     @Override
     public String toString() {
-        return new String(ptr.getByteArray(0, len.intValue()));
+        return ptr == null ? null : new String(ptr.getByteArray(0, len.intValue()));
     }
 }

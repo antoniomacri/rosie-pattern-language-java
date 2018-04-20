@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,17 +34,31 @@ public class RosieEngineConfigTest {
         assertThat(result, is(notNullValue()));
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map cfg = objectMapper.readValue(result, Map.class);
+        List cfg = objectMapper.readValue(result, List.class);
 
-        for (Object key : cfg.keySet()) {
-            if (cfg.get(key) instanceof Map) {
-                Map subMap = (Map) cfg.get(key);
-                assertThat("Config key=" + key + " attribute name", subMap.get("name"), is(notNullValue()));
-                assertThat("Config key=" + key + " attribute desc", subMap.get("desc"), is(notNullValue()));
-                if (subMap.get("value") == null) {
-                    System.out.println("NOTE: no value for config key " + subMap.get("name"));
-                }
+        List list1 = (List) cfg.get(0);
+        for (Object elem : list1) {
+            Map map = (Map) elem;
+            assertThat("Config key=" + "key" + " attribute name", map.get("name"), is(notNullValue()));
+            assertThat("Config key=" + "key" + " attribute description", map.get("description"), is(notNullValue()));
+            if (map.get("value") == null) {
+                System.out.println("NOTE: no value for config key " + map.get("name"));
             }
         }
+
+        List list2 = (List) cfg.get(1);
+        String rplVersion = null;
+        String libpath = null;
+        for (Object elem : list2) {
+            Map map = (Map) elem;
+            if (map.get("name").equals("RPL_VERSION")) {
+                rplVersion = (String) map.get("value");
+            }
+            if (map.get("name").equals("ROSIE_LIBPATH")) {
+                libpath = (String) map.get("value");
+            }
+        }
+        assertThat(rplVersion, is(notNullValue()));
+        assertThat(libpath, is(notNullValue()));
     }
 }
