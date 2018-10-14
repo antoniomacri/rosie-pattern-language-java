@@ -54,16 +54,6 @@ public class RosieEngine implements Closeable {
         }
     }
 
-    public String config() {
-        try (RosieString retvals = RosieString.create()) {
-            int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
-            if (ok != 0) {
-                throw new RuntimeException("config() failed (please report this as a bug)");
-            }
-            return retvals.toString();
-        }
-    }
-
     public CompilationResult compile(String exp) {
         try (RosieString errors = RosieString.create(); RosieString rosieExpression = RosieString.create(exp)) {
             IntByReference pat = new IntByReference();
@@ -74,6 +64,9 @@ public class RosieEngine implements Closeable {
             return new CompilationResult(pat.getValue() != 0 ? pat.getValue() : null, errors.toString());
         }
     }
+
+
+    //region Functions for loading statements/blocks/packages into an engine
 
     public LoadResult load(String src) {
         try (RosieString rosieSrc = RosieString.create(src); RosieString rosiePkgname = RosieString.create(); RosieString errors = RosieString.create()) {
@@ -118,6 +111,10 @@ public class RosieEngine implements Closeable {
         }
     }
 
+    //endregion
+
+    //region Functions for matching and tracing (debugging)
+
     public MatchResult match(int Cpat, String input, int start, String encoder) {
         if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
@@ -136,13 +133,13 @@ public class RosieEngine implements Closeable {
             int tmatch = Cmatch.tmatch;
             if (Cmatch.data.ptr == null) {
                 if (Cmatch.data.len.intValue() == 0) {
-                    return new MatchResult(null, left, abend, ttotal, tmatch);
+                    return new MatchResult(false, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 1) {
-                    return new MatchResult(/* FIXME: what does True mean? */"", left, abend, ttotal, tmatch);
+                    return new MatchResult(true, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 2) {
                     throw new IllegalArgumentException("invalid output encoder");
                 } else if (Cmatch.data.len.intValue() == 4) {
-                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
+                    throw new IllegalStateException("invalid compiled pattern");
                 }
             }
             return new MatchResult(Cmatch.data.toString(), left, abend, ttotal, tmatch);
@@ -158,14 +155,14 @@ public class RosieEngine implements Closeable {
             IntByReference Cmatched = new IntByReference();
             int ok = RosieLib.INSTANCE.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
             if (ok != 0) {
-                throw new RuntimeException("trace() failed (please report this as a bug)");
+                throw new RuntimeException("trace() failed (please report this as a bug): " + Ctrace.toString());
             }
 
             if (Ctrace.ptr == null) {
                 if (Ctrace.len.intValue() == 2) {
                     throw new IllegalArgumentException("invalid trace style");
                 } else if (Ctrace.len.intValue() == 1) {
-                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
+                    throw new IllegalStateException("invalid compiled pattern");
                 }
             }
             boolean matched = Cmatched.getValue() != 0;
@@ -218,6 +215,9 @@ public class RosieEngine implements Closeable {
         }
     }
 
+    //endregion
+
+    //region Functions for reading and processing rcfile (init file) contents
 
     public ReadRcFileResult readRcFile(String filename) throws IOException {
         IntByReference Cfile_exists = new IntByReference();
@@ -278,6 +278,85 @@ public class RosieEngine implements Closeable {
         return new ExecuteRcFileResult(false, true, messagesList);
     }
 
+    //endregion
+
+
+    //region Functions that return a parse tree or fragments of one
+
+    public ParseResult parse_expression(String exp) {
+        try (RosieString rosieExpression = RosieString.create(exp); RosieString rosieParseTree = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_parse_expression(engine, rosieExpression, rosieParseTree, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("parse_expression failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieParseTree.toString(), rosieMessages.toString());
+        }
+    }
+
+    public ParseResult parse_block(String block) {
+        try (RosieString rosieExpression = RosieString.create(block); RosieString rosieParseTree = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_parse_block(engine, rosieExpression, rosieParseTree, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("parse_block failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieParseTree.toString(), rosieMessages.toString());
+        }
+    }
+
+    public ParseResult expression_refs(String exp) {
+        try (RosieString rosieExpression = RosieString.create(exp); RosieString rosieRefs = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_expression_refs(engine, rosieExpression, rosieRefs, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("expression_refs failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieRefs.toString(), rosieMessages.toString());
+        }
+    }
+
+    public ParseResult block_refs(String block) {
+        try (RosieString rosieExpression = RosieString.create(block); RosieString rosieRefs = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_block_refs(engine, rosieExpression, rosieRefs, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("block_refs failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieRefs.toString(), rosieMessages.toString());
+        }
+    }
+
+    public ParseResult expression_deps(String exp) {
+        try (RosieString rosieExpression = RosieString.create(exp); RosieString rosieDeps = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_expression_deps(engine, rosieExpression, rosieDeps, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("expression_deps failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieDeps.toString(), rosieMessages.toString());
+        }
+    }
+
+    public ParseResult block_deps(String block) {
+        try (RosieString rosieExpression = RosieString.create(block); RosieString rosieDeps = RosieString.create(); RosieString rosieMessages = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_block_deps(engine, rosieExpression, rosieDeps, rosieMessages);
+            if (ok != 0) {
+                throw new RuntimeException("block_deps failed (please report this as a bug)");
+            }
+            return new ParseResult(rosieDeps.toString(), rosieMessages.toString());
+        }
+    }
+
+    //endregion
+
+
+    //region Functions for reading and modifying various engine settings
+
+    public String config() {
+        try (RosieString retvals = RosieString.create()) {
+            int ok = RosieLib.INSTANCE.rosie_config(engine, retvals);
+            if (ok != 0) {
+                throw new RuntimeException("config() failed (please report this as a bug)");
+            }
+            return retvals.toString();
+        }
+    }
 
     public String getLibpath() {
         RosieString libpathArg = RosieString.create();
@@ -321,6 +400,8 @@ public class RosieEngine implements Closeable {
         }
         return new AllocLimitResult(limit_arg.getValue(), usage_arg.getValue());
     }
+
+    //endregion
 
 
     @Override

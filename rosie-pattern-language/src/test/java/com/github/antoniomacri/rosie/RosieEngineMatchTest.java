@@ -53,6 +53,7 @@ public class RosieEngineMatchTest {
 
         MatchResult result = rosie.match(compiled.pat, "xyz", 1, "json");
         assertThat("matched string", result.data, is(nullValue()));
+        assertThat("bool result", result.bool, is(false));
 
         assertThat("leftover", result.leftover, is(equalTo(3)));
         assertThat("abend", result.abend, is(equalTo(0)));
@@ -123,8 +124,7 @@ public class RosieEngineMatchTest {
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         MatchResult result = rosie.match(compiled.pat, input, 1, "bool");
-        assertThat("matched string", result.data, is(notNullValue()));
-        assertThat("matched string", result.data, is(""));  // FIXME: what does True mean?
+        assertThat("bool result", result.bool, is(true));
 
         assertThat("leftover", result.leftover, is(equalTo(3)));
         assertThat("abend", result.abend, is(equalTo(0)));

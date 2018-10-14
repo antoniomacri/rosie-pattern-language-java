@@ -80,4 +80,22 @@ public interface RosieLib extends Library {
 
     // int rosie_execute_rcfile(Engine *e, str *filename, int *file_exists, int *no_errors, str *messages);
     int rosie_execute_rcfile(Pointer e, RosieString filename, IntByReference file_exists, IntByReference no_errors, RosieString messages);
+
+    // int rosie_expression_refs(void *e, str *input, str *refs, str *messages);
+    int rosie_expression_refs(Pointer e, RosieString input, RosieString refs, RosieString messages);
+
+    // int rosie_block_refs(void *e, str *input, str *refs, str *messages);
+    int rosie_block_refs(Pointer e, RosieString input, RosieString refs, RosieString messages);
+
+    // int rosie_expression_deps(void *e, str *input, str *deps, str *messages);
+    int rosie_expression_deps(Pointer e, RosieString input, RosieString deps, RosieString messages);
+
+    // int rosie_block_deps(void *e, str *input, str *deps, str *messages);
+    int rosie_block_deps(Pointer e, RosieString input, RosieString deps, RosieString messages);
+
+    // int rosie_parse_expression(void *e, str *input, str *parsetree, str *messages);
+    int rosie_parse_expression(Pointer e, RosieString input, RosieString parsetree, RosieString messages);
+
+    // int rosie_parse_block(void *e, str *input, str *parsetree, str *messages);
+    int rosie_parse_block(Pointer e, RosieString input, RosieString parsetree, RosieString messages);
 }

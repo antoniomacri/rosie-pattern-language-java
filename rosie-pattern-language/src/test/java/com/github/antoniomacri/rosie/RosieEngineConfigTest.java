@@ -1,6 +1,7 @@
 package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,11 +39,11 @@ public class RosieEngineConfigTest {
 
         List list1 = (List) cfg.get(0);
         for (Object elem : list1) {
-            Map map = (Map) elem;
+            Map<?, ?> map = (Map) elem;
             assertThat("Config key=" + "key" + " attribute name", map.get("name"), is(notNullValue()));
             assertThat("Config key=" + "key" + " attribute description", map.get("description"), is(notNullValue()));
             if (map.get("value") == null) {
-                System.out.println("NOTE: no value for config key " + map.get("name"));
+                assertThat(map, IsMapContaining.hasEntry("name", "ROSIE_COMMAND"));
             }
         }
 
