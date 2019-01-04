@@ -41,7 +41,7 @@ public class RosieString extends Structure implements AutoCloseable {
     }
 
     public static RosieString create(String expression) {
-        RosieString str = RosieLib.INSTANCE.rosie_new_string_ptr(expression, expression.length());
+        RosieString str = RosieLib.rosie_new_string_ptr(expression, expression.length());
         return str;
     }
 
@@ -52,7 +52,7 @@ public class RosieString extends Structure implements AutoCloseable {
     @Override
     public void close() {
         if (ptr != null) {
-            RosieLib.INSTANCE.rosie_free_string_ptr(this);
+            RosieLib.rosie_free_string_ptr(this);
             ptr = null;
         }
     }
