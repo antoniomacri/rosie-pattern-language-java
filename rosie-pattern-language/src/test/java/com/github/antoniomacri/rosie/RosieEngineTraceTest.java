@@ -37,7 +37,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAny() {
-        TraceResult traceResult = rosie.trace(net_any, "1.2.3", 1, "condensed");
+        TraceResult traceResult = rosie.trace(net_any, "1.2.3.4", 1, "condensed");
         assertThat(traceResult.matched, is(true));
         assertThat(traceResult.trace, is(notNullValue()));
         assertThat(traceResult.trace.length(), is(greaterThan(0)));
@@ -53,11 +53,11 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAnyFull() {
-        TraceResult traceResult = rosie.trace(net_any, "1.2.3", 1, "full");
+        TraceResult traceResult = rosie.trace(net_any, "1.2.3.4", 1, "full");
         assertThat(traceResult.matched, is(true));
         assertThat(traceResult.trace, is(notNullValue()));
         assertThat(traceResult.trace.length(), is(greaterThan(0)));
-        assertThat(traceResult.trace, containsString("Matched 5 chars"));
+        assertThat(traceResult.trace, containsString("Matched 6 chars"));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAnyJson() throws IOException {
-        TraceResult traceResult = rosie.trace(net_any, "1.2.3", 1, "json");
+        TraceResult traceResult = rosie.trace(net_any, "1.2.3.4", 1, "json");
         assertThat(traceResult.matched, is(true));
         assertThat(traceResult.trace, is(notNullValue()));
         assertThat(traceResult.trace.length(), is(greaterThan(0)));
@@ -81,6 +81,6 @@ public class RosieEngineTraceTest {
         Map<?, ?> m = objectMapper.readValue(traceResult.trace, Map.class);
 
         assertThat(m, IsMapContaining.hasEntry(is("match"), is(notNullValue())));
-        assertThat(m, IsMapContaining.hasEntry(is("nextpos"), is(6)));
+        assertThat(m, IsMapContaining.hasEntry(is("nextpos"), is(8)));
     }
 }
