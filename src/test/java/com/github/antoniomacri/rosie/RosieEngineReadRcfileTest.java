@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 
 public class RosieEngineReadRcfileTest {
-    private static final String TEST_DIR = "../rosie-pattern-language-native/submodule/test";
+    private static final String TEST_DIR = "src/test/resources/tests";
 
     private RosieEngine rosie;
 

@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class RosieEngineExecuteRcfileTest {
-    private static final String TEST_DIR = "../rosie-pattern-language-native/submodule/test";
+    private static final String TEST_DIR = "src/test/resources/tests";
 
     private RosieEngine rosie;
 
