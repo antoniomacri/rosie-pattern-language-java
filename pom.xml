@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.antoniomacri</groupId>
-    <artifactId>rosie-pattern-language-java</artifactId>
-    <version>1.0.0-alpha-6-2-NEXT</version>
+    <artifactId>rosie-pattern-language</artifactId>
+    <version>1.0.0-alpha-7-SNAPSHOT</version>
     <name>Rosie Pattern Language</name>
     <packaging>jar</packaging>
 
@@ -31,6 +31,12 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
 
+    <scm>
+        <connection>scm:git:git@github.com:antoniomacri/rosie-pattern-language-java.git</connection>
+        <developerConnection>scm:git:git@github.com:antoniomacri/rosie-pattern-language-java.git</developerConnection>
+        <url>https://github.com/antoniomacri/rosie-pattern-language-java</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -137,5 +143,73 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>ossrh</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.3</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>ossrh</releaseProfiles>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

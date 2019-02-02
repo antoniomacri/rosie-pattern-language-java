@@ -33,3 +33,47 @@ Useful links:
  * Keep up to date with `librosie` development.
  * Publish released packages to a Maven repository.
  * Use exceptions instead of return values to signal errors.
+ * Support Windows Subsystem for Linux.
+
+
+# Releasing
+
+Modify the `settings.xml` in order to add the OSSRH server credentials:
+
+```
+<servers>
+  <server>
+    <id>ossrh</id>
+    <username>...</username>
+    <password>...</password>
+  </server>
+  ...
+</servers>
+```
+and GPG configuration:
+```
+<profiles>
+  <profile>
+    <id>ossrh</id>
+    <properties>
+      <gpg.executable>gpg2</gpg.executable> <!-- optional -->
+      <gpg.passphrase>...</gpg.passphrase>
+    </properties>
+  </profile>
+  ...
+</profiles>
+```
+
+Deploy a snapshot version to OSSRH by enabling the `ossrh` profile and running the usual
+
+    mvn clean deploy
+
+In order to deploy a release version, enable the `ossrh` profile and run the maven-release-plugin:
+
+    mvn release:prepare
+
+answering the prompts for versions and tags, followed by
+
+    mvn release:perform
+
+With the property `autoReleaseAfterClose` set to true an automated release to the Central Repository is performed (for release versions).
