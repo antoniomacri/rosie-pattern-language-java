@@ -22,6 +22,20 @@ Useful links:
  - [ ] Write usage and add some examples here.
 
 
+# Usage
+
+To include in your Maven project, add the following dependency to the pom:
+
+```
+<dependency>
+    <groupId>com.github.antoniomacri</groupId>
+    <artifactId>rosie-pattern-language</artifactId>
+    <version>${rosie-pattern-language.version}</version>
+</dependency>
+```
+specifying the version number.
+
+
 # Releasing
 
 Modify the `settings.xml` in order to add the OSSRH server credentials:
