@@ -29,9 +29,9 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberOk() throws IOException {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
-        MatchResult result = rosie.match(compiled.pat, "321", 2, "json");
+        MatchResult result = rosie.match(compiled, "321", 2, "json");
         assertThat("matched string", result.data, is(notNullValue()));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -49,9 +49,9 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberKo() {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
-        MatchResult result = rosie.match(compiled.pat, "xyz", 1, "json");
+        MatchResult result = rosie.match(compiled, "xyz", 1, "json");
         assertThat("matched string", result.data, is(nullValue()));
         assertThat("bool result", result.bool, is(false));
 
@@ -63,10 +63,10 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixed() throws IOException {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        MatchResult result = rosie.match(compiled.pat, input, 1, "json");
+        MatchResult result = rosie.match(compiled, input, 1, "json");
         assertThat("matched string", result.data, is(notNullValue()));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -84,10 +84,10 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixed2() throws IOException {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        MatchResult result = rosie.match(compiled.pat, input, 10, "json");
+        MatchResult result = rosie.match(compiled, input, 10, "json");
         assertThat("matched string", result.data, is(notNullValue()));
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -105,10 +105,10 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixedLine() {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        MatchResult result = rosie.match(compiled.pat, input, 1, "line");
+        MatchResult result = rosie.match(compiled, input, 1, "line");
         assertThat("matched string", result.data, is(notNullValue()));
         assertThat("matched string", result.data, is(equalTo(input)));
 
@@ -120,10 +120,10 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixedBool() {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        MatchResult result = rosie.match(compiled.pat, input, 1, "bool");
+        MatchResult result = rosie.match(compiled, input, 1, "bool");
         assertThat("bool result", result.bool, is(true));
 
         assertThat("leftover", result.leftover, is(equalTo(3)));
@@ -134,10 +134,10 @@ public class RosieEngineMatchTest {
 
     @Test
     public void testMatchNumberMixedColor() {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        MatchResult result = rosie.match(compiled.pat, input, 1, "color");
+        MatchResult result = rosie.match(compiled, input, 1, "color");
         assertThat("matched string", result.data, is(notNullValue()));
 
         // only checking the first two chars, looking for the start of ANSI color sequence
@@ -151,9 +151,9 @@ public class RosieEngineMatchTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMatchInvalidEncoderName() {
-        CompilationResult compiled = rosie.compile("[:digit:]+");
+        Pattern compiled = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        rosie.match(compiled.pat, input, 1, "this_is_not_a_valid_encoder_name");
+        rosie.match(compiled, input, 1, "this_is_not_a_valid_encoder_name");
     }
 }

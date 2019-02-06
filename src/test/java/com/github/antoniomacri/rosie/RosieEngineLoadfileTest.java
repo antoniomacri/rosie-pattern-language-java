@@ -22,9 +22,7 @@ public class RosieEngineLoadfileTest {
 
     @Test
     public void testLoad() {
-        LoadResult result = rosie.loadfile(Paths.get(TEST_DIR, "test.rpl").toString());
-        assertThat(result.ok, is(1));
-        assertThat(result.packageName, is(equalTo("test")));
-        assertThat(result.errors, is(nullValue()));
+        String packageName = rosie.loadfile(Paths.get(TEST_DIR, "test.rpl").toString());
+        assertThat(packageName, is(equalTo("test")));
     }
 }

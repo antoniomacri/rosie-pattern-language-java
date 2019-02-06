@@ -11,17 +11,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RosieEngineMatchFileTest {
     private RosieEngine rosie;
-    private int net_any;
-    private int findall_net_any;
+    private Pattern netAnyPattern;
+    private Pattern findallNetAnyPattern;
 
     @Before
     public void init() {
         rosie = new RosieEngine();
         rosie.importPackage("net");
-        CompilationResult compiledNetAny = rosie.compile("net.any");
-        net_any = compiledNetAny.pat;
-        CompilationResult compiledNetAllAny = rosie.compile("findall:net.any");
-        findall_net_any = compiledNetAllAny.pat;
+        netAnyPattern = rosie.compile("net.any");
+        findallNetAnyPattern = rosie.compile("findall:net.any");
     }
 
     @After
@@ -32,7 +30,7 @@ public class RosieEngineMatchFileTest {
 
     @Test
     public void testMatchFile() {
-        MatchFileResult result = rosie.matchfile(findall_net_any, "json", "src/test/resources/resolv.conf", "/tmp/resolv.out", "/tmp/resolv.err");
+        MatchFileResult result = rosie.matchfile(findallNetAnyPattern, "json", "src/test/resources/resolv.conf", "/tmp/resolv.out", "/tmp/resolv.err");
 
         assertThat("cin", result.cin, is(equalTo(10)));
         assertThat("cout", result.cout, is(equalTo(5)));
@@ -41,7 +39,7 @@ public class RosieEngineMatchFileTest {
 
     @Test
     public void testMatchFileColor() {
-        MatchFileResult result = rosie.matchfile(net_any, "color", "src/test/resources/resolv.conf", null, "/dev/null", true);
+        MatchFileResult result = rosie.matchfile(netAnyPattern, "color", "src/test/resources/resolv.conf", null, "/dev/null", true);
 
         assertThat("cin", result.cin, is(equalTo(1)));
         assertThat("cout", result.cout, is(equalTo(0)));

@@ -16,6 +16,9 @@ import java.util.List;
 
 /**
  * Create a Rosie pattern matching engine.
+ * <p>
+ * A Rosie pattern matching engine is used to load/import RPL code
+ * (patterns) and to do matching. Create as many engines as you need.
  */
 public class RosieEngine implements Closeable {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -54,37 +57,56 @@ public class RosieEngine implements Closeable {
         }
     }
 
-    public CompilationResult compile(String exp) {
+    public Pattern compile(String exp) throws RosieException {
         try (RosieString errors = RosieString.create(); RosieString rosieExpression = RosieString.create(exp)) {
             IntByReference pat = new IntByReference();
             int ok = RosieLib.rosie_compile(engine, rosieExpression, pat, errors);
             if (ok != 0) {
                 throw new RuntimeException("compile() failed (please report this as a bug)");
             }
-            return new CompilationResult(pat.getValue() != 0 ? pat.getValue() : null, errors.toString());
+            if (pat.getValue() == 0 || hasErrors(errors)) {
+                throw new RosieException(errors.toString());
+            }
+            return new Pattern(pat.getValue());
         }
     }
 
 
     //region Functions for loading statements/blocks/packages into an engine
 
-    public LoadResult load(String src) {
+    public String load(String src) {
         try (RosieString rosieSrc = RosieString.create(src); RosieString rosiePkgname = RosieString.create(); RosieString errors = RosieString.create()) {
             IntByReference ok = new IntByReference();
             int result = RosieLib.rosie_load(engine, ok, rosieSrc, rosiePkgname, errors);
             if (result != 0) {
                 throw new RuntimeException("load() failed (please report this as a bug)");
             }
-            String errorsString = errors.toString();
-            return new LoadResult(ok.getValue(), rosiePkgname.toString(), errorsString);
+            if (ok.getValue() == 0 || hasErrors(errors)) {
+                throw new RosieException(errors.toString());
+            }
+            return rosiePkgname.toString();
         }
     }
 
-    public ImportResult importPackage(String pkgname) {
+    public String loadfile(String fn) {
+        try (RosieString Cerrs = RosieString.create(); RosieString Cfn = RosieString.create(fn); RosieString Cpkgname = RosieString.create()) {
+            IntByReference Csuccess = new IntByReference();
+            int ok = RosieLib.rosie_loadfile(engine, Csuccess, Cfn, Cpkgname, Cerrs);
+            if (ok != 0) {
+                throw new RuntimeException("loadfile() failed (please report this as a bug)");
+            }
+            if (Csuccess.getValue() == 0 || hasErrors(Cerrs)) {
+                throw new RosieException(Cerrs.toString());
+            }
+            return Cpkgname.toString();
+        }
+    }
+
+    public String importPackage(String pkgname) {
         return importPackage(pkgname, null);
     }
 
-    public ImportResult importPackage(String pkgname, String as_name) {
+    public String importPackage(String pkgname, String as_name) {
         try (RosieString Cerrs = RosieString.create(); RosieString Cas_name = as_name != null ? RosieString.create(as_name) : null;
              RosieString Cpkgname = RosieString.create(pkgname); RosieString Cactual_pkgname = RosieString.create()) {
             IntByReference Csuccess = new IntByReference();
@@ -92,22 +114,10 @@ public class RosieEngine implements Closeable {
             if (ok != 0) {
                 throw new RuntimeException("import() failed (please report this as a bug)");
             }
-            String actual_pkgname = Cactual_pkgname.toString();
-            String errs = Cerrs.toString();
-            return new ImportResult(Csuccess.getValue(), actual_pkgname, errs);
-        }
-    }
-
-    public LoadResult loadfile(String fn) {
-        try (RosieString Cerrs = RosieString.create(); RosieString Cfn = RosieString.create(fn); RosieString Cpkgname = RosieString.create()) {
-            IntByReference Csuccess = new IntByReference();
-            int ok = RosieLib.rosie_loadfile(engine, Csuccess, Cfn, Cpkgname, Cerrs);
-            if (ok != 0) {
-                throw new RuntimeException("loadfile() failed (please report this as a bug)");
+            if (Csuccess.getValue() == 0 || hasErrors(Cerrs)) {
+                throw new RosieException(Cerrs.toString());
             }
-            String errs = Cerrs.toString();
-            String pkgname = Cpkgname.toString();
-            return new LoadResult(Csuccess.getValue(), pkgname, errs);
+            return Cactual_pkgname.toString();
         }
     }
 
@@ -115,14 +125,10 @@ public class RosieEngine implements Closeable {
 
     //region Functions for matching and tracing (debugging)
 
-    public MatchResult match(int Cpat, String input, int start, String encoder) {
-        if (Cpat == 0) {
-            throw new IllegalArgumentException("invalid compiled pattern");
-        }
-
+    public MatchResult match(Pattern pattern, String input, int start, String encoder) {
         try (RosieString Cinput = RosieString.create(input)) {
             RosieMatch Cmatch = new RosieMatch();
-            int ok = RosieLib.rosie_match(engine, Cpat, start, encoder, Cinput, Cmatch);
+            int ok = RosieLib.rosie_match(engine, pattern.getPat(), start, encoder, Cinput, Cmatch);
             if (ok != 0) {
                 throw new RuntimeException("match() failed (please report this as a bug)");
             }
@@ -146,14 +152,10 @@ public class RosieEngine implements Closeable {
         }
     }
 
-    public TraceResult trace(int Cpat, String input, int start, String style) {
-        if (Cpat == 0) {
-            throw new RuntimeException("invalid compiled pattern");
-        }
-
+    public TraceResult trace(Pattern pattern, String input, int start, String style) {
         try (RosieString Cinput = RosieString.create(input); RosieString Ctrace = RosieString.create()) {
             IntByReference Cmatched = new IntByReference();
-            int ok = RosieLib.rosie_trace(engine, Cpat, start, style, Cinput, Cmatched, Ctrace);
+            int ok = RosieLib.rosie_trace(engine, pattern.getPat(), start, style, Cinput, Cmatched, Ctrace);
             if (ok != 0) {
                 throw new RuntimeException("trace() failed (please report this as a bug): " + Ctrace.toString());
             }
@@ -171,15 +173,15 @@ public class RosieEngine implements Closeable {
         }
     }
 
-    public MatchFileResult matchfile(int Cpat, String encoder) {
-        return matchfile(Cpat, encoder, null, null, null, false);
+    public MatchFileResult matchfile(Pattern pattern, String encoder, String infile, String outfile, String errfile) {
+        return matchfile(pattern.getPat(), encoder, infile, outfile, errfile, false);
     }
 
-    public MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile) {
-        return matchfile(Cpat, encoder, infile, outfile, errfile, false);
+    public MatchFileResult matchfile(Pattern pattern, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
+        return matchfile(pattern.getPat(), encoder, infile, outfile, errfile, wholefile);
     }
 
-    public MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
+    private MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
         if (Cpat == 0) {
             throw new IllegalArgumentException("invalid compiled pattern");
         }
@@ -408,6 +410,42 @@ public class RosieEngine implements Closeable {
     public void close() {
         if (engine != Pointer.NULL) {
             RosieLib.rosie_finalize(engine);
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
+            // TODO: null quando chiuso
         }
+    }
+
+    private static boolean hasErrors(RosieString errors) {
+        return errors.len.intValue() > 0 || errors.ptr != Pointer.NULL;
     }
 }
