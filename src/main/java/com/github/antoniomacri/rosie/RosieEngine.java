@@ -65,7 +65,7 @@ public class RosieEngine implements Closeable {
                 throw new RuntimeException("compile() failed (please report this as a bug)");
             }
             if (pat.getValue() == 0 || hasErrors(errors)) {
-                throw new RosieException(errors.toString());
+                throw new RosieException("Errors reported", errors.toString());
             }
             return new Pattern(pat.getValue());
         }
@@ -82,7 +82,7 @@ public class RosieEngine implements Closeable {
                 throw new RuntimeException("load() failed (please report this as a bug)");
             }
             if (ok.getValue() == 0 || hasErrors(errors)) {
-                throw new RosieException(errors.toString());
+                throw new RosieException("Errors reported", errors.toString());
             }
             return rosiePkgname.toString();
         }
@@ -96,7 +96,7 @@ public class RosieEngine implements Closeable {
                 throw new RuntimeException("loadfile() failed (please report this as a bug)");
             }
             if (Csuccess.getValue() == 0 || hasErrors(Cerrs)) {
-                throw new RosieException(Cerrs.toString());
+                throw new RosieException("Errors reported", Cerrs.toString());
             }
             return Cpkgname.toString();
         }
@@ -115,7 +115,7 @@ public class RosieEngine implements Closeable {
                 throw new RuntimeException("import() failed (please report this as a bug)");
             }
             if (Csuccess.getValue() == 0 || hasErrors(Cerrs)) {
-                throw new RosieException(Cerrs.toString());
+                throw new RosieException("Errors reported", Cerrs.toString());
             }
             return Cactual_pkgname.toString();
         }
@@ -125,10 +125,17 @@ public class RosieEngine implements Closeable {
 
     //region Functions for matching and tracing (debugging)
 
-    public MatchResult match(Pattern pattern, String input, int start, String encoder) {
+    /**
+     * @param pattern
+     * @param input
+     * @param start   0-based index
+     * @param encoder
+     * @return
+     */
+    public Match match(Pattern pattern, String input, int start, String encoder) {
         try (RosieString Cinput = RosieString.create(input)) {
             RosieMatch Cmatch = new RosieMatch();
-            int ok = RosieLib.rosie_match(engine, pattern.getPat(), start, encoder, Cinput, Cmatch);
+            int ok = RosieLib.rosie_match(engine, pattern.getPat(), start + 1, encoder, Cinput, Cmatch);
             if (ok != 0) {
                 throw new RuntimeException("match() failed (please report this as a bug)");
             }
@@ -139,16 +146,16 @@ public class RosieEngine implements Closeable {
             int tmatch = Cmatch.tmatch;
             if (Cmatch.data.ptr == null) {
                 if (Cmatch.data.len.intValue() == 0) {
-                    return new MatchResult(false, left, abend, ttotal, tmatch);
+                    return Match.bool(false, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 1) {
-                    return new MatchResult(true, left, abend, ttotal, tmatch);
+                    return Match.bool(true, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 2) {
                     throw new IllegalArgumentException("invalid output encoder");
                 } else if (Cmatch.data.len.intValue() == 4) {
                     throw new IllegalStateException("invalid compiled pattern");
                 }
             }
-            return new MatchResult(Cmatch.data.toString(), left, abend, ttotal, tmatch);
+            return Match.text(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
         }
     }
 

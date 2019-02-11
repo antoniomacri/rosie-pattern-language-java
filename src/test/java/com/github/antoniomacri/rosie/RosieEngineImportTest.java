@@ -1,13 +1,8 @@
 package com.github.antoniomacri.rosie;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,69 +56,46 @@ public class RosieEngineImportTest {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
 
-        MatchResult matchResult = rosie.match(pattern, "1.2.3.4", 1, "color");
+        Match match = rosie.match(pattern, "1.2.3.4", 0, "color");
 
-        assertThat("match result", matchResult.data, is(notNullValue()));
+        assertThat("match result", match, is(notNullValue()));
+        assertThat("matched?", match.matches(), is(true));
+        assertThat("matched string", match.match(), is(notNullValue()));
     }
 
     @Test
-    public void testMatchOkJson() throws IOException {
+    public void testMatchOkJson() {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
 
-        MatchResult matchResult = rosie.match(pattern, "1.2.3.4", 1, "json");
+        Match match = rosie.match(pattern, "1.2.3.4", 0, "json");
 
-        assertThat("match result", matchResult.data, is(notNullValue()));
+        assertThat("match result", match, is(notNullValue()));
+        assertThat("matched?", match.matches(), is(true));
+        assertThat("matched string", match.match(), is("1.2.3.4"));
+        assertThat("matched type", match.type(), is("net.any"));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map m = objectMapper.readValue(matchResult.data, Map.class);
+        assertThat("subs size", match.subs(), hasSize(1));
 
-        System.out.println("  Json:");
-        System.out.println("    " + m);
-        printTree(m, 1);
+        assertThat("subs^2[0] matched string", match.subs().get(0).subs().get(0).match(), is("1.2.3.4"));
+        assertThat("subs^2[0] matched type", match.subs().get(0).subs().get(0).type(), is("net.ipv4"));
 
-        assertThat("data", m.get("data"), is("1.2.3.4"));
-        assertThat("type", m.get("type"), is("net.any"));
-
-        List<?> subs = (List) m.get("subs");
-        assertThat("subs size", subs, hasSize(1));
-        m = (Map) subs.get(0);
-        assertThat("subs[0].data", m.get("data"), is("1.2.3.4"));
-        assertThat("subs[0].type", m.get("type"), is("net.ip"));
-
-        subs = (List) m.get("subs");
-        assertThat("subs^2 size", subs, hasSize(1));
-        m = (Map) subs.get(0);
-        assertThat("subs^2[0].data", m.get("data"), is("1.2.3.4"));
-        assertThat("subs^2[0].type", m.get("type"), is("net.ipv4"));
-
-        assertThat("subs^3", m.get("subs"), is(nullValue()));
+        assertThat("subs^3", match.subs().get(0).subs().get(0).subs(), is(nullValue()));
     }
 
     @Test
     public void testMatchKo() {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
-        MatchResult matchResult = rosie.match(pattern, "Hello, world!", 1, "color");
+        Match match = rosie.match(pattern, "Hello, world!", 0, "color");
 
-        assertThat("match result", matchResult.data, is(nullValue()));
+        assertThat("match result", match, is(notNullValue()));
+        assertThat("matched?", match.matches(), is(false));
+        assertThat("matched string", match.match(), is(nullValue()));
     }
 
     @Test(expected = RosieException.class)
     public void testImportFailure() {
         rosie.importPackage("THISPACKAGEDOESNOTEXIST");
-    }
-
-
-    private void printTree(Map m, int indent) {
-        System.out.format("%" + indent + "s Tree:\n", " ");
-        System.out.format("%" + indent + "s   type: %s\n", " ", m.get("type"));
-        System.out.format("%" + indent + "s   data: %s\n", " ", m.get("data"));
-        if (m.get("subs") != null) {
-            List s = (List) m.get("subs");
-            for (Object ss : s) {
-                printTree((Map) ss, indent + 2);
-            }
-        }
     }
 }
