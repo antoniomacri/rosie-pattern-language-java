@@ -16,10 +16,10 @@ public class Match {
     private final Boolean bool;
     private final String data;
     private final Encoder encoder;
-    public final int leftover;
-    public final int abend;
-    public final int ttotal;
-    public final int tmatch;
+    private final int leftover;
+    private final int abend;
+    private final int ttotal;
+    private final int tmatch;
 
     private JsonNode rootNode;
     private JsonMatchResult matchResult;
@@ -60,6 +60,22 @@ public class Match {
             return jsonMatchResult() != null ? jsonMatchResult().match() : null;
         }
         return data;
+    }
+
+    public int skipped() {
+        return abend;
+    }
+
+    public int remaining() {
+        return leftover;
+    }
+
+    public int totalMillis() {
+        return ttotal;
+    }
+
+    public int matchMillis() {
+        return tmatch;
     }
 
     public MatchResult jsonMatchResult() {

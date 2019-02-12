@@ -35,10 +35,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is("21"));
 
-        assertThat("leftover", match.leftover, is(equalTo(0)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(0)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
 
         assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
         assertThat("matched type", match.jsonMatchResult().type(), is("*"));
@@ -58,10 +58,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(false));
         assertThat("matched string", match.match(), is(nullValue()));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
     }
 
     @Test
@@ -75,10 +75,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is(equalTo(input.substring(0, input.length() - 3))));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
 
         assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
         assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
@@ -99,10 +99,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is(equalTo(input.substring(9, input.length() - 3))));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
 
         assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
         assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
@@ -123,10 +123,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is(equalTo(input)));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
     }
 
     @Test
@@ -137,10 +137,10 @@ public class RosieEngineMatchTest {
         Match match = rosie.match(pattern, input, 0, "bool");
         assertThat("matched?", match.matches(), is(true));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
     }
 
     @Test
@@ -154,10 +154,10 @@ public class RosieEngineMatchTest {
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), startsWith(new String(new byte[]{0x1B, '['})));
 
-        assertThat("leftover", match.leftover, is(equalTo(3)));
-        assertThat("abend", match.abend, is(equalTo(0)));
-        assertThat("ttotal", match.ttotal, is(greaterThan(0)));
-        assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+        assertThat("skipped", match.skipped(), is(equalTo(0)));
+        assertThat("remaining", match.remaining(), is(equalTo(3)));
+        assertThat("totalMillis", match.totalMillis(), is(greaterThan(0)));
+        assertThat("matchMillis", match.matchMillis(), is(greaterThan(0)));
     }
 
     @Test(expected = IllegalArgumentException.class)
