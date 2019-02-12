@@ -5,13 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 
 /**
  * not thread-safe
  */
-public class Match implements MatchResult {
+public class Match {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Boolean bool;
@@ -23,10 +22,10 @@ public class Match implements MatchResult {
     public final int tmatch;
 
     private JsonNode rootNode;
-    private PartialMatchResult matchResult;
+    private JsonMatchResult matchResult;
 
 
-    private Match(Boolean bool, int leftover, int abend, int ttotal, int tmatch) {
+    Match(Boolean bool, int leftover, int abend, int ttotal, int tmatch) {
         this.encoder = Encoder.BOOL;
         this.bool = bool;
         this.data = null;
@@ -36,7 +35,7 @@ public class Match implements MatchResult {
         this.tmatch = tmatch;
     }
 
-    private Match(String encoder, String data, int leftover, int abend, int ttotal, int tmatch) {
+    Match(String encoder, String data, int leftover, int abend, int ttotal, int tmatch) {
         this.encoder = Encoder.valueOf(encoder.toUpperCase());
         this.bool = null;
         this.data = data;
@@ -46,12 +45,28 @@ public class Match implements MatchResult {
         this.tmatch = tmatch;
     }
 
-    static Match bool(boolean value, int leftover, int abend, int ttotal, int tmatch) {
-        return new Match(value, leftover, abend, ttotal, tmatch);
+
+    public boolean matches() {
+        if (encoder == Encoder.BOOL) {
+            return bool;
+        } else if (encoder == Encoder.JSON) {
+            return jsonMatchResult() != null;
+        }
+        return data != null;
     }
 
-    static Match text(String encoder, String data, int leftover, int abend, int ttotal, int tmatch) {
-        return new Match(encoder, data, leftover, abend, ttotal, tmatch);
+    public String match() {
+        if (encoder == Encoder.JSON) {
+            return jsonMatchResult() != null ? jsonMatchResult().match() : null;
+        }
+        return data;
+    }
+
+    public MatchResult jsonMatchResult() {
+        if (matchResult == null && rootNode() != null) {
+            matchResult = new JsonMatchResult(rootNode());
+        }
+        return matchResult;
     }
 
 
@@ -69,57 +84,12 @@ public class Match implements MatchResult {
         return rootNode;
     }
 
-    private PartialMatchResult matchResult() {
-        if (matchResult == null && rootNode() != null) {
-            matchResult = new PartialMatchResult(rootNode());
-        }
-        return matchResult;
-    }
 
-
-    public boolean matches() {
-        if (encoder == Encoder.BOOL) {
-            return bool;
-        } else if (encoder == Encoder.JSON) {
-            return matchResult() != null;
-        }
-        return data != null;
-    }
-
-    @Override
-    public String match() {
-        if (encoder == Encoder.JSON) {
-            return matchResult() != null ? matchResult().match() : null;
-        }
-        return data;
-    }
-
-    @Override
-    public int start() {
-        return matchResult() != null ? matchResult().start() : -1;
-    }
-
-    @Override
-    public int end() {
-        return matchResult() != null ? matchResult().end() : -1;
-    }
-
-    @Override
-    public String type() {
-        return matchResult() != null ? matchResult().type() : null;
-    }
-
-    @Override
-    public List<MatchResult> subs() {
-        return matchResult() != null ? matchResult().subs() : null;
-    }
-
-
-    private static class PartialMatchResult implements MatchResult {
+    private static class JsonMatchResult implements MatchResult {
         private JsonNode jsonNode;
         private List<MatchResult> subs;
 
-        private PartialMatchResult(JsonNode jsonNode) {
+        private JsonMatchResult(JsonNode jsonNode) {
             Objects.requireNonNull(jsonNode);
             this.jsonNode = jsonNode;
         }
@@ -151,7 +121,7 @@ public class Match implements MatchResult {
                 Iterator<JsonNode> subs = jsonNode.get("subs").elements();
                 while (subs.hasNext()) {
                     JsonNode node = subs.next();
-                    MatchResult sub = new PartialMatchResult(node);
+                    MatchResult sub = new JsonMatchResult(node);
                     list.add(sub);
                 }
                 this.subs = Collections.unmodifiableList(list);

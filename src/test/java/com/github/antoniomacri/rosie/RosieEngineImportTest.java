@@ -73,14 +73,13 @@ public class RosieEngineImportTest {
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is("1.2.3.4"));
-        assertThat("matched type", match.type(), is("net.any"));
 
-        assertThat("subs size", match.subs(), hasSize(1));
-
-        assertThat("subs^2[0] matched string", match.subs().get(0).subs().get(0).match(), is("1.2.3.4"));
-        assertThat("subs^2[0] matched type", match.subs().get(0).subs().get(0).type(), is("net.ipv4"));
-
-        assertThat("subs^3", match.subs().get(0).subs().get(0).subs(), is(nullValue()));
+        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
+        assertThat("matched type", match.jsonMatchResult().type(), is("net.any"));
+        assertThat("subs size", match.jsonMatchResult().subs(), hasSize(1));
+        assertThat("subs^2[0] matched string", match.jsonMatchResult().subs().get(0).subs().get(0).match(), is("1.2.3.4"));
+        assertThat("subs^2[0] matched type", match.jsonMatchResult().subs().get(0).subs().get(0).type(), is("net.ipv4"));
+        assertThat("subs^3", match.jsonMatchResult().subs().get(0).subs().get(0).subs(), is(nullValue()));
     }
 
     @Test

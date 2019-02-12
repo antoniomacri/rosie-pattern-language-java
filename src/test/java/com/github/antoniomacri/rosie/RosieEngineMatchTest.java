@@ -27,21 +27,25 @@ public class RosieEngineMatchTest {
     public void testMatchNumberOk() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = rosie.match(pattern, "321", 1, "json");
+        String input = "321";
+        int skip = 1;
+        Match match = rosie.match(pattern, input, skip, "json");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is("21"));
-        assertThat("matched type", match.type(), is("*"));
-        assertThat("match start", match.start(), is(1));
-        assertThat("match end", match.end(), is(3));
-
-        assertThat("subs size", match.subs(), is(nullValue()));
 
         assertThat("leftover", match.leftover, is(equalTo(0)));
         assertThat("abend", match.abend, is(equalTo(0)));
         assertThat("ttotal", match.ttotal, is(greaterThan(0)));
         assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+
+        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
+        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
+        assertThat("match start", match.jsonMatchResult().start(), is(1));
+        assertThat("match end", match.jsonMatchResult().end(), is(3));
+        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
+        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
     }
 
     @Test
@@ -70,14 +74,18 @@ public class RosieEngineMatchTest {
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is(equalTo(input.substring(0, input.length() - 3))));
-        assertThat("matched type", match.type(), is("*"));
-        assertThat("match start", match.start(), is(0));
-        assertThat("match end", match.end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
 
         assertThat("leftover", match.leftover, is(equalTo(3)));
         assertThat("abend", match.abend, is(equalTo(0)));
         assertThat("ttotal", match.ttotal, is(greaterThan(0)));
         assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+
+        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
+        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
+        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
+        assertThat("match start", match.jsonMatchResult().start(), is(0));
+        assertThat("match end", match.jsonMatchResult().end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
+        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
     }
 
     @Test
@@ -90,15 +98,18 @@ public class RosieEngineMatchTest {
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
         assertThat("matched string", match.match(), is(equalTo(input.substring(9, input.length() - 3))));
-        assertThat("matched type", match.type(), is("*"));
-        assertThat("match start", match.start(), is(9));
-        assertThat("match end", match.end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
-
 
         assertThat("leftover", match.leftover, is(equalTo(3)));
         assertThat("abend", match.abend, is(equalTo(0)));
         assertThat("ttotal", match.ttotal, is(greaterThan(0)));
         assertThat("tmatch", match.tmatch, is(greaterThan(0)));
+
+        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
+        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
+        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
+        assertThat("match start", match.jsonMatchResult().start(), is(9));
+        assertThat("match end", match.jsonMatchResult().end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
+        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
     }
 
     @Test

@@ -146,16 +146,16 @@ public class RosieEngine implements Closeable {
             int tmatch = Cmatch.tmatch;
             if (Cmatch.data.ptr == null) {
                 if (Cmatch.data.len.intValue() == 0) {
-                    return Match.bool(false, left, abend, ttotal, tmatch);
+                    return new Match(false, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 1) {
-                    return Match.bool(true, left, abend, ttotal, tmatch);
+                    return new Match(true, left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == 2) {
                     throw new IllegalArgumentException("invalid output encoder");
                 } else if (Cmatch.data.len.intValue() == 4) {
                     throw new IllegalStateException("invalid compiled pattern");
                 }
             }
-            return Match.text(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
+            return new Match(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
         }
     }
 
