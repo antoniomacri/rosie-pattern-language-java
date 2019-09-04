@@ -1,6 +1,5 @@
 package com.github.antoniomacri.rosie;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.antoniomacri.rosie.lib.RosieLib;
 import com.github.antoniomacri.rosie.lib.RosieMatch;
@@ -9,9 +8,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 
 
 /**
@@ -222,69 +218,6 @@ public class RosieEngine implements Closeable {
 
             return new MatchFileResult(Ccin.getValue(), Ccout.getValue(), Ccerr.getValue());
         }
-    }
-
-    //endregion
-
-    //region Functions for reading and processing rcfile (init file) contents
-
-    public ReadRcFileResult readRcFile(String filename) throws IOException {
-        IntByReference Cfile_exists = new IntByReference();
-        RosieString filenameArg = filename == null ? RosieString.create() : RosieString.create(filename);
-        RosieString Coptions = RosieString.create();
-        RosieString Cmessages = RosieString.create();
-        int ok = RosieLib.rosie_read_rcfile(engine, filenameArg, Cfile_exists, Coptions, Cmessages);
-        if (ok != 0) {
-            throw new RuntimeException("read_rcfile() failed (please report this as a bug)");
-        }
-        String messages = Cmessages.toString();
-        List<String> messagesList;
-        if (messages != null && !messages.isEmpty()) {
-            messagesList = OBJECT_MAPPER.readValue(messages, new TypeReference<List<String>>() {
-            });
-        } else {
-            messagesList = Collections.emptyList();
-        }
-        if (Cfile_exists.getValue() == 0) {
-            return new ReadRcFileResult(false, null, messagesList);
-        }
-        // else: file existed and was read
-        String options = Coptions.toString();
-        if (options != null && !options.isEmpty()) {
-            List<KeyValue> optionsList = OBJECT_MAPPER.readValue(options, new TypeReference<List<KeyValue>>() {
-            });
-            return new ReadRcFileResult(true, optionsList, messagesList);
-        }
-        // else: file existed, but some problems processing it
-        return new ReadRcFileResult(true, null, messagesList);
-    }
-
-    public ExecuteRcFileResult executeRcFile(String filename) throws IOException {
-        IntByReference Cfile_exists = new IntByReference();
-        IntByReference Cno_errors = new IntByReference();
-        RosieString filenameArg = filename == null ? RosieString.create() : RosieString.create(filename);
-        RosieString Cmessages = RosieString.create();
-        int ok = RosieLib.rosie_execute_rcfile(engine, filenameArg, Cfile_exists, Cno_errors, Cmessages);
-        if (ok != 0) {
-            throw new RuntimeException("execute_rcfile() failed (please report this as a bug)");
-        }
-        String messages = Cmessages.toString();
-        List<String> messagesList;
-        if (messages != null && !messages.isEmpty()) {
-            messagesList = OBJECT_MAPPER.readValue(messages, new TypeReference<List<String>>() {
-            });
-        } else {
-            messagesList = Collections.emptyList();
-        }
-        if (Cfile_exists.getValue() == 0) {
-            return new ExecuteRcFileResult(false, false, messagesList);
-        }
-        // else: file existed
-        if (Cno_errors.getValue() == 1) {
-            return new ExecuteRcFileResult(true, true, messagesList);
-        }
-        // else: some problems processing it
-        return new ExecuteRcFileResult(false, true, messagesList);
     }
 
     //endregion
