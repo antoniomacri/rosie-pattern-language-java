@@ -176,50 +176,6 @@ public class RosieEngine implements Closeable {
         }
     }
 
-    public MatchFileResult matchfile(Pattern pattern, String encoder, String infile, String outfile, String errfile) {
-        return matchfile(pattern.getPat(), encoder, infile, outfile, errfile, false);
-    }
-
-    public MatchFileResult matchfile(Pattern pattern, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
-        return matchfile(pattern.getPat(), encoder, infile, outfile, errfile, wholefile);
-    }
-
-    private MatchFileResult matchfile(int Cpat, String encoder, String infile, String outfile, String errfile, boolean wholefile) {
-        if (Cpat == 0) {
-            throw new IllegalArgumentException("invalid compiled pattern");
-        }
-
-        try (RosieString Cerrmsg = RosieString.create()) {
-            IntByReference Ccin = new IntByReference();
-            IntByReference Ccout = new IntByReference();
-            IntByReference Ccerr = new IntByReference();
-            int wff = wholefile ? 1 : 0;
-
-            int ok = RosieLib.rosie_matchfile(engine, Cpat, encoder, wff,
-                    infile != null ? infile : "",
-                    outfile != null ? outfile : "",
-                    errfile != null ? errfile : "",
-                    Ccin, Ccout, Ccerr, Cerrmsg);
-
-            if (ok != 0) {
-                throw new RuntimeException("matchfile() failed: " + Cerrmsg.toString());
-            }
-            if (Ccin.getValue() == -1) { // Error occurred
-                if (Ccout.getValue() == 2) {
-                    throw new IllegalArgumentException("invalid encoder");
-                } else if (Ccout.getValue() == 3) {
-                    throw new RuntimeException(Cerrmsg.toString()); // file i/o error
-                } else if (Ccout.getValue() == 4) {
-                    throw new IllegalStateException("invalid compiled pattern (already freed?)");
-                } else {
-                    throw new RuntimeException("unknown error caused matchfile to fail");
-                }
-            }
-
-            return new MatchFileResult(Ccin.getValue(), Ccout.getValue(), Ccerr.getValue());
-        }
-    }
-
     //endregion
 
 
