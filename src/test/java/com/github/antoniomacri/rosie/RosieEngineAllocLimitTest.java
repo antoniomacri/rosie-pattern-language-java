@@ -25,7 +25,7 @@ public class RosieEngineAllocLimitTest {
     @Test
     public void testNoInitialLimit() {
         AllocLimitResult limits = rosie.getAllocLimit();
-        assertThat(limits.limit, is(0));
+        assertThat(limits.getLimit(), is(0));
     }
 
     @Test
@@ -34,11 +34,11 @@ public class RosieEngineAllocLimitTest {
 
         rosie.setAllocLimit(0);
         limits = rosie.getAllocLimit();
-        assertThat(limits.limit, is(0));
+        assertThat(limits.getLimit(), is(0));
 
         rosie.setAllocLimit(8199);
         limits = rosie.getAllocLimit();
-        assertThat(limits.limit, is(8199));
+        assertThat(limits.getLimit(), is(8199));
     }
 
     @Test
@@ -46,10 +46,10 @@ public class RosieEngineAllocLimitTest {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(0);
-        assertThat(limits.limit, is(0));
+        assertThat(limits.getLimit(), is(0));
 
         limits = rosie.setAllocLimit(8199);
-        assertThat(limits.limit, is(8199));
+        assertThat(limits.getLimit(), is(8199));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,7 +62,7 @@ public class RosieEngineAllocLimitTest {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(8199);
-        assertThat(limits.limit, is(8199));
+        assertThat(limits.getLimit(), is(8199));
 
         try {
             rosie.setAllocLimit(8191);
@@ -70,6 +70,6 @@ public class RosieEngineAllocLimitTest {
         }
 
         limits = rosie.getAllocLimit();
-        assertThat(limits.limit, is(8199));
+        assertThat(limits.getLimit(), is(8199));
     }
 }
