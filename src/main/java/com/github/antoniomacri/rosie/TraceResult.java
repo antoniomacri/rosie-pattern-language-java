@@ -4,7 +4,8 @@ public class TraceResult {
     private final boolean matched;
     private final String trace;
 
-    public TraceResult(boolean matched, String trace) {
+
+    TraceResult(boolean matched, String trace) {
         this.matched = matched;
         this.trace = trace;
     }
