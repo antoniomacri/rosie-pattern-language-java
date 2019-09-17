@@ -6,19 +6,20 @@ import com.github.antoniomacri.rosie.lib.RosieString;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
+import java.io.Closeable;
 import java.util.Objects;
 
 
-public class Pattern {
+public class Pattern implements Closeable {
     /**
      * Pointer to the rosie engine.
      */
-    private final Pointer engine;
+    private Pointer engine;
 
     /**
      * An integer handle to the rplx object into which the expressions is compiled by Rosie.
      */
-    private final int pat;
+    private int pat;
 
 
     Pattern(Pointer engine, int pat) {
@@ -120,6 +121,16 @@ public class Pattern {
             boolean matched = Cmatched.getValue() != 0;
             String trace = Ctrace.toString();
             return new TraceResult(matched, trace);
+        }
+    }
+
+
+    @Override
+    public void close() {
+        if (pat != 0) {
+            RosieLib.rosie_free_rplx(engine, pat);
+            engine = Pointer.NULL;
+            pat = 0;  // the same integer value may be reused by the engine after freed, therefore set to zero
         }
     }
 }
