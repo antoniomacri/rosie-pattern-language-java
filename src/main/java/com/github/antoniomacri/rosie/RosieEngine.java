@@ -230,7 +230,7 @@ public class RosieEngine implements Closeable {
      *
      * @param newLimit the heap size limit, or 0 to remove the limit (it will default to Lua's garbage collection settings)
      */
-    public AllocLimitResult setAllocLimit(Integer newLimit) {
+    public AllocLimitResult setAllocLimit(int newLimit) {
         IntByReference limit_arg = new IntByReference();
         IntByReference usage_arg = new IntByReference();
         if (newLimit != 0 && newLimit < 8192) {
