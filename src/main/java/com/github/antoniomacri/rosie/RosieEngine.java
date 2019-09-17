@@ -241,38 +241,7 @@ public class RosieEngine implements Closeable {
     public void close() {
         if (engine != Pointer.NULL) {
             RosieLib.rosie_finalize(engine);
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
-            // TODO: null quando chiuso
+            engine = Pointer.NULL;
         }
     }
 
