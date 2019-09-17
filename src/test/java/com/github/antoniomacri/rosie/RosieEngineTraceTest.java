@@ -35,7 +35,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAny() {
-        TraceResult traceResult = rosie.trace(netAnyPattern, "1.2.3.4", 1, "condensed");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "condensed");
         assertThat(traceResult.matched(), is(true));
         assertThat(traceResult.getTrace(), is(notNullValue()));
         assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
@@ -43,7 +43,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetIp() {
-        TraceResult traceResult = rosie.trace(netIpPattern, "1.2.3", 1, "condensed");
+        TraceResult traceResult = netIpPattern.trace("1.2.3", 1, "condensed");
         assertThat(traceResult.matched(), is(false));
         assertThat(traceResult.getTrace(), is(notNullValue()));
         assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
@@ -51,7 +51,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAnyFull() {
-        TraceResult traceResult = rosie.trace(netAnyPattern, "1.2.3.4", 1, "full");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "full");
         assertThat(traceResult.matched(), is(true));
         assertThat(traceResult.getTrace(), is(notNullValue()));
         assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
@@ -61,7 +61,7 @@ public class RosieEngineTraceTest {
     @Test
     public void testInvalidTraceStyle() {
         try {
-            rosie.trace(netAnyPattern, "1.2.3", 1, "no_such_trace_style");
+            netAnyPattern.trace("1.2.3", 1, "no_such_trace_style");
             assertThat("Do not reach here", false);
         } catch (RuntimeException e) {
             assertThat(e.getMessage(), containsString("invalid trace style"));
@@ -70,7 +70,7 @@ public class RosieEngineTraceTest {
 
     @Test
     public void testTraceNetAnyJson() throws IOException {
-        TraceResult traceResult = rosie.trace(netAnyPattern, "1.2.3.4", 1, "json");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "json");
         assertThat(traceResult.matched(), is(true));
         assertThat(traceResult.getTrace(), is(notNullValue()));
         assertThat(traceResult.getTrace().length(), is(greaterThan(0)));

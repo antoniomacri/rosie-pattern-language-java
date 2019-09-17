@@ -2,7 +2,6 @@ package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.antoniomacri.rosie.lib.RosieLib;
-import com.github.antoniomacri.rosie.lib.RosieMatch;
 import com.github.antoniomacri.rosie.lib.RosieString;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -63,7 +62,7 @@ public class RosieEngine implements Closeable {
             if (pat.getValue() == 0 || hasErrors(errors)) {
                 throw new RosieException("Errors reported", errors.toString());
             }
-            return new Pattern(pat.getValue());
+            return new Pattern(engine, pat.getValue());
         }
     }
 
@@ -114,65 +113,6 @@ public class RosieEngine implements Closeable {
                 throw new RosieException("Errors reported", Cerrs.toString());
             }
             return Cactual_pkgname.toString();
-        }
-    }
-
-    //endregion
-
-    //region Functions for matching and tracing (debugging)
-
-    /**
-     * @param pattern
-     * @param input
-     * @param start   0-based index
-     * @param encoder
-     * @return
-     */
-    public Match match(Pattern pattern, String input, int start, String encoder) {
-        try (RosieString Cinput = RosieString.create(input)) {
-            RosieMatch Cmatch = new RosieMatch();
-            int ok = RosieLib.rosie_match(engine, pattern.getPat(), start + 1, encoder, Cinput, Cmatch);
-            if (ok != 0) {
-                throw new RuntimeException("match() failed (please report this as a bug)");
-            }
-
-            int left = Cmatch.leftover;
-            int abend = Cmatch.abend;
-            int ttotal = Cmatch.ttotal;
-            int tmatch = Cmatch.tmatch;
-            if (Cmatch.data.ptr == null) {
-                if (Cmatch.data.len.intValue() == 0) {
-                    return new Match(false, left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == 1) {
-                    return new Match(true, left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == 2) {
-                    throw new IllegalArgumentException("invalid output encoder");
-                } else if (Cmatch.data.len.intValue() == 4) {
-                    throw new IllegalStateException("invalid compiled pattern");
-                }
-            }
-            return new Match(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
-        }
-    }
-
-    public TraceResult trace(Pattern pattern, String input, int start, String style) {
-        try (RosieString Cinput = RosieString.create(input); RosieString Ctrace = RosieString.create()) {
-            IntByReference Cmatched = new IntByReference();
-            int ok = RosieLib.rosie_trace(engine, pattern.getPat(), start, style, Cinput, Cmatched, Ctrace);
-            if (ok != 0) {
-                throw new RuntimeException("trace() failed (please report this as a bug): " + Ctrace.toString());
-            }
-
-            if (Ctrace.ptr == null) {
-                if (Ctrace.len.intValue() == 2) {
-                    throw new IllegalArgumentException("invalid trace style");
-                } else if (Ctrace.len.intValue() == 1) {
-                    throw new IllegalStateException("invalid compiled pattern");
-                }
-            }
-            boolean matched = Cmatched.getValue() != 0;
-            String trace = Ctrace.toString();
-            return new TraceResult(matched, trace);
         }
     }
 

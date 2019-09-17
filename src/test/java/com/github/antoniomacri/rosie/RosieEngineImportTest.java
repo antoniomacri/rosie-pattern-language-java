@@ -56,7 +56,7 @@ public class RosieEngineImportTest {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
 
-        Match match = rosie.match(pattern, "1.2.3.4", 0, "color");
+        Match match = pattern.match("1.2.3.4", 0, "color");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
@@ -68,7 +68,7 @@ public class RosieEngineImportTest {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
 
-        Match match = rosie.match(pattern, "1.2.3.4", 0, "json");
+        Match match = pattern.match("1.2.3.4", 0, "json");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
@@ -86,7 +86,7 @@ public class RosieEngineImportTest {
     public void testMatchKo() {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
-        Match match = rosie.match(pattern, "Hello, world!", 0, "color");
+        Match match = pattern.match("Hello, world!", 0, "color");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(false));
