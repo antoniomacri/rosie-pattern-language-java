@@ -25,4 +25,10 @@ public class RosieEngineLoadfileTest {
         String packageName = rosie.loadfile(Paths.get(TEST_DIR, "test.rpl").toString());
         assertThat(packageName, is(equalTo("test")));
     }
+
+    @Test
+    public void testLoadNoPackage() {
+        String packageName = rosie.loadfile(Paths.get(TEST_DIR, "test-no-package.rpl").toString());
+        assertThat(packageName, is(nullValue()));
+    }
 }

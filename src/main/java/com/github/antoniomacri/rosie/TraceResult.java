@@ -11,10 +11,16 @@ public class TraceResult {
     }
 
 
+    /**
+     * {@code true} if the input matched.
+     */
     public boolean matched() {
         return matched;
     }
 
+    /**
+     * The trace output as a string.
+     */
     public String getTrace() {
         return trace;
     }

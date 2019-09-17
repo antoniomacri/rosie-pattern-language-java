@@ -36,6 +36,12 @@ public class RosieEngineLoadCompileTest {
     }
 
     @Test
+    public void testLoadNoPackage() {
+        String packageName = rosie.load("foo = \"foo\"");
+        assertThat(packageName, is(nullValue()));
+    }
+
+    @Test
     public void testCompileFoo() {
         testLoad();
 

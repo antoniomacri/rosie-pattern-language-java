@@ -10,7 +10,14 @@ import java.util.Objects;
 
 
 public class Pattern {
+    /**
+     * Pointer to the rosie engine.
+     */
     private final Pointer engine;
+
+    /**
+     * An integer handle to the rplx object into which the expressions is compiled by Rosie.
+     */
     private final int pat;
 
 
@@ -25,7 +32,40 @@ public class Pattern {
 
 
     /**
+     * Matches the pattern against an input string using the JSON output encoder.
+     *
+     * @param input the input string
+     */
+    public Match match(String input) {
+        return match(input, 0, "json");
+    }
+
+    /**
+     * Matches the pattern against an input string using the JSON output encoder.
+     *
+     * @param input the input string
      * @param start 0-based index
+     */
+    public Match match(String input, int start) {
+        return match(input, start, "json");
+    }
+
+    /**
+     * Matches the pattern against an input string using the specified output encoder.
+     *
+     * @param input   the input string
+     * @param encoder the output encoder
+     */
+    public Match match(String input, String encoder) {
+        return match(input, 0, encoder);
+    }
+
+    /**
+     * Matches the pattern against an input string using the specified output encoder.
+     *
+     * @param input   the input string
+     * @param start   0-based index
+     * @param encoder the output encoder
      */
     public Match match(String input, int start, String encoder) {
         try (RosieString Cinput = RosieString.create(input)) {
@@ -54,6 +94,14 @@ public class Pattern {
         }
     }
 
+
+    /**
+     * Matches the pattern against an input string, tracing with the specified style.
+     *
+     * @param input the input string
+     * @param start 0-based index
+     * @param style the tracing style
+     */
     public TraceResult trace(String input, int start, String style) {
         try (RosieString Cinput = RosieString.create(input); RosieString Ctrace = RosieString.create()) {
             IntByReference Cmatched = new IntByReference();

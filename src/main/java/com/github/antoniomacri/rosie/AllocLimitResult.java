@@ -11,10 +11,16 @@ public class AllocLimitResult {
     }
 
 
+    /**
+     * Limit (in kilobytes, 1024 bytes) of the Lua heap size.
+     */
     public int getLimit() {
         return limit;
     }
 
+    /**
+     * Usage (in kilobytes, 1024 bytes) of the current Lua heap usage.
+     */
     public int getUsage() {
         return usage;
     }
