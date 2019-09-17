@@ -1,14 +1,8 @@
 package com.github.antoniomacri.rosie;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -30,36 +24,14 @@ public class RosieEngineConfigTest {
 
 
     @Test
-    public void testConfig() throws IOException {
-        String result = rosie.config();
-        assertThat(result, is(notNullValue()));
+    public void testConfig() {
+        Configuration configuration = rosie.config();
+        assertThat(configuration, is(notNullValue()));
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        List cfg = objectMapper.readValue(result, List.class);
-
-        List list1 = (List) cfg.get(0);
-        for (Object elem : list1) {
-            Map<?, ?> map = (Map) elem;
-            assertThat("Config key=" + "key" + " attribute name", map.get("name"), is(notNullValue()));
-            assertThat("Config key=" + "key" + " attribute description", map.get("description"), is(notNullValue()));
-            if (map.get("value") == null) {
-                assertThat(map, IsMapContaining.hasEntry("name", "ROSIE_COMMAND"));
-            }
-        }
-
-        List list2 = (List) cfg.get(1);
-        String rplVersion = null;
-        String libpath = null;
-        for (Object elem : list2) {
-            Map map = (Map) elem;
-            if (map.get("name").equals("RPL_VERSION")) {
-                rplVersion = (String) map.get("value");
-            }
-            if (map.get("name").equals("ROSIE_LIBPATH")) {
-                libpath = (String) map.get("value");
-            }
-        }
-        assertThat(rplVersion, is(notNullValue()));
-        assertThat(libpath, is(notNullValue()));
+        assertThat(configuration.getRosieVersion(), is(notNullValue()));
+        assertThat(configuration.getRosieHome(), is(notNullValue()));
+        assertThat(configuration.getLibdir(), is(notNullValue()));
+        assertThat(configuration.getRplVersion(), is(notNullValue()));
+        assertThat(configuration.getLibpath(), is(notNullValue()));
     }
 }

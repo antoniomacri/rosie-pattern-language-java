@@ -1,5 +1,6 @@
 package com.github.antoniomacri.rosie;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.antoniomacri.rosie.lib.RosieLib;
 import com.github.antoniomacri.rosie.lib.RosieString;
@@ -7,6 +8,8 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -170,13 +173,20 @@ public class RosieEngine implements Closeable {
     /**
      * Retrieves the configuration of an engine and of the Rosie installation that created it.
      */
-    public String config() {
+    public Configuration config() {
         try (RosieString retvals = RosieString.create()) {
             int ok = RosieLib.rosie_config(engine, retvals);
             if (ok != 0) {
                 throw new RuntimeException("config() failed (please report this as a bug)");
             }
-            return retvals.toString();
+
+            try {
+                List<List<ConfigProperty>> configs = OBJECT_MAPPER.readValue(retvals.toString(), new TypeReference<List<List<ConfigProperty>>>() {
+                });
+                return new Configuration(configs.get(0), configs.get(1), configs.get(2));
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot parse configuration JSON.", e);
+            }
         }
     }
 
