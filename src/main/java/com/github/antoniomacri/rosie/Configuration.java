@@ -1,5 +1,6 @@
 package com.github.antoniomacri.rosie;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -16,9 +17,9 @@ public class Configuration {
 
 
     public Configuration(List<ConfigProperty> rosie, List<ConfigProperty> engine, List<ConfigProperty> encoder) {
-        this.rosieConfiguration = rosie;
-        this.engineConfiguration = engine;
-        this.encoderConfiguration = encoder;
+        this.rosieConfiguration = Collections.unmodifiableList(rosie);
+        this.engineConfiguration = Collections.unmodifiableList(engine);
+        this.encoderConfiguration = Collections.unmodifiableList(encoder);
     }
 
 
