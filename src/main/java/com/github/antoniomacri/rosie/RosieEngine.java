@@ -175,6 +175,8 @@ public class RosieEngine implements Closeable {
 
     /**
      * Sets the libpath.
+     *
+     * @param libpath the new desired libpath
      */
     public void setLibpath(String libpath) {
         RosieString rsLibPath = RosieString.create(libpath);

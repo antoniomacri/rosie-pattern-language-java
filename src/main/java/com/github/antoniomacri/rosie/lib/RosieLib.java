@@ -5,6 +5,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 
+
 // Documentation taken from:
 // https://gitlab.com/rosie-pattern-language/rosie/blob/master/doc/librosie.md
 public class RosieLib {
@@ -230,12 +231,12 @@ public class RosieLib {
 
     /**
      * Calling rosie_import with package  causes the same actions as
-     * calling rosie_load with the string import <pkgname>, with one exception:
-     * rosie_import will always find and load the RPL package <pkgname> in the
-     * filesystem.  By contrast, when rosie_load encounters import <pkgname>, the
+     * calling rosie_load with the string import &lt;pkgname&gt;, with one exception:
+     * rosie_import will always find and load the RPL package &lt;pkgname&gt; in the
+     * filesystem.  By contrast, when rosie_load encounters import &lt;pkgname&gt;, the
      * package may have already been loaded into the engine.
      * <p>
-     * Including a (string) value for the as parameter behaves like import <pkgname> as <as> with the same caveats.
+     * Including a (string) value for the as parameter behaves like import &lt;pkgname&gt; as &lt;as&gt; with the same caveats.
      */
     // int rosie_import(Engine *e, int *ok, str *pkgname, str *as, str *actual_pkgname, str *messages);
     public static native int rosie_import(Pointer e, IntByReference ok, RosieString pkgname, RosieString as, RosieString actual_pkgname, RosieString messages);
