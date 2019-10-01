@@ -52,7 +52,7 @@ public class RosieEngineMatchTest {
     public void testMatchNumberKo() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("xyz", 0, "json");
+        Match match = pattern.match("xyz", "json");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(false));
@@ -69,7 +69,7 @@ public class RosieEngineMatchTest {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        Match match = pattern.match(input, 0, "json");
+        Match match = pattern.match(input, "json");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
@@ -117,7 +117,7 @@ public class RosieEngineMatchTest {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        Match match = pattern.match(input, 0, "line");
+        Match match = pattern.match(input, "line");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
@@ -134,7 +134,7 @@ public class RosieEngineMatchTest {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        Match match = pattern.match(input, 0, "bool");
+        Match match = pattern.match(input, "bool");
         assertThat("matched?", match.matches(), is(true));
 
         assertThat("skipped", match.skipped(), is(equalTo(0)));
@@ -148,7 +148,7 @@ public class RosieEngineMatchTest {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        Match match = pattern.match(input, 0, "color");
+        Match match = pattern.match(input, "color");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(true));
@@ -165,6 +165,6 @@ public class RosieEngineMatchTest {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        pattern.match(input, 0, "this_is_not_a_valid_encoder_name");
+        pattern.match(input, "this_is_not_a_valid_encoder_name");
     }
 }

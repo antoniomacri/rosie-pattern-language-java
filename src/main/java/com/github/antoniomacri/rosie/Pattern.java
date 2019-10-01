@@ -81,13 +81,13 @@ public class Pattern implements Closeable {
             int ttotal = Cmatch.ttotal;
             int tmatch = Cmatch.tmatch;
             if (Cmatch.data.ptr == null) {
-                if (Cmatch.data.len.intValue() == 0) {
+                if (Cmatch.data.len.intValue() == MatchStatus.NO_MATCH) {
                     return new Match(false, left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == 1) {
+                } else if (Cmatch.data.len.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
                     return new Match(true, left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == 2) {
+                } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_ENCODER) {
                     throw new IllegalArgumentException("invalid output encoder");
-                } else if (Cmatch.data.len.intValue() == 4) {
+                } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_PATTERN) {
                     throw new IllegalStateException("invalid compiled pattern");
                 }
             }
@@ -112,10 +112,12 @@ public class Pattern implements Closeable {
             }
 
             if (Ctrace.ptr == null) {
-                if (Ctrace.len.intValue() == 2) {
+                if (Ctrace.len.intValue() == MatchStatus.ERR_NO_ENCODER) {
                     throw new IllegalArgumentException("invalid trace style");
-                } else if (Ctrace.len.intValue() == 1) {
+                } else if (Ctrace.len.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
                     throw new IllegalStateException("invalid compiled pattern");
+                } else if (Ctrace.len.intValue() != 0) {
+                    throw new RuntimeException("unexpected error");
                 }
             }
             boolean matched = Cmatched.getValue() != 0;
@@ -132,5 +134,25 @@ public class Pattern implements Closeable {
             engine = Pointer.NULL;
             pat = 0;  // the same integer value may be reused by the engine after freed, therefore set to zero
         }
+    }
+
+
+    interface MatchStatus {
+        int NO_MATCH = 0;
+
+        /**
+         * The output encoder produced no output data.
+         */
+        int MATCH_WITHOUT_DATA = 1;
+
+        /**
+         * The output encoder or trace style passed to librosie is invalid.
+         */
+        int ERR_NO_ENCODER = 2;
+
+        /**
+         * The pattern handle passed to librosie is invalid.
+         */
+        int ERR_NO_PATTERN = 4;
     }
 }
