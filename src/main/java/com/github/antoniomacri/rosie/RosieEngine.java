@@ -55,7 +55,7 @@ public class RosieEngine implements Closeable {
             if (pat.getValue() == 0 || hasErrors(rsErrors)) {
                 throw new RosieException("Errors reported", rsErrors.toString());
             }
-            return new Pattern(engine, pat.getValue());
+            return new Pattern(engine, expression, pat.getValue());
         }
     }
 

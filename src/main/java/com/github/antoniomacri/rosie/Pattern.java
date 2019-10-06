@@ -17,17 +17,23 @@ public class Pattern implements Closeable {
     private Pointer engine;
 
     /**
+     * The literal RPL pattern.
+     */
+    private String expression;
+
+    /**
      * An integer handle to the rplx object into which the expressions is compiled by Rosie.
      */
     private int pat;
 
 
-    Pattern(Pointer engine, int pat) {
+    Pattern(Pointer engine, String expression, int pat) {
         Objects.requireNonNull(engine);
         if (pat <= 0) {
             throw new RuntimeException("Invalid pattern");
         }
         this.engine = engine;
+        this.expression = expression;
         this.pat = pat;
     }
 
@@ -126,6 +132,11 @@ public class Pattern implements Closeable {
         }
     }
 
+
+    @Override
+    public String toString() {
+        return expression;
+    }
 
     @Override
     public void close() {
