@@ -5,8 +5,7 @@ import org.junit.Test;
 
 import java.nio.file.Paths;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineLoadfileTest {
@@ -23,12 +22,12 @@ public class RosieEngineLoadfileTest {
     @Test
     public void testLoad() {
         String packageName = rosie.loadFile(Paths.get(TEST_DIR, "test.rpl").toString());
-        assertThat(packageName, is(equalTo("test")));
+        assertThat(packageName).isEqualTo("test");
     }
 
     @Test
     public void testLoadNoPackage() {
         String packageName = rosie.loadFile(Paths.get(TEST_DIR, "test-no-package.rpl").toString());
-        assertThat(packageName, is(nullValue()));
+        assertThat(packageName).isNull();
     }
 }

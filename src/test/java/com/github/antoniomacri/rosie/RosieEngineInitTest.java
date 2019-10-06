@@ -4,11 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.emptyString;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineInitTest {
@@ -27,12 +23,9 @@ public class RosieEngineInitTest {
 
     @Test
     public void testInit() {
-        assertThat("rosie engine", rosie, is(notNullValue()));
+        assertThat(rosie).isNotNull();
 
         String libpath = rosie.getLibpath();
-        assertThat("libpath", libpath, is(notNullValue()));
-        assertThat("libpath", libpath, is(not(emptyString())));
-
-        System.out.println("Lib path: " + libpath);
+        assertThat(libpath).isNotBlank();
     }
 }

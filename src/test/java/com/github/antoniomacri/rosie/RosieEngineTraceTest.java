@@ -1,7 +1,6 @@
 package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +8,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 
 public class RosieEngineTraceTest {
@@ -36,49 +34,45 @@ public class RosieEngineTraceTest {
     @Test
     public void testTraceNetAny() {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "condensed");
-        assertThat(traceResult.matched(), is(true));
-        assertThat(traceResult.getTrace(), is(notNullValue()));
-        assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
+        assertThat(traceResult.matched()).isTrue();
+        assertThat(traceResult.getTrace()).isNotNull();
+        assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
     }
 
     @Test
     public void testTraceNetIp() {
         TraceResult traceResult = netIpPattern.trace("1.2.3", 1, "condensed");
-        assertThat(traceResult.matched(), is(false));
-        assertThat(traceResult.getTrace(), is(notNullValue()));
-        assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
+        assertThat(traceResult.matched()).isFalse();
+        assertThat(traceResult.getTrace()).isNotNull();
+        assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
     }
 
     @Test
     public void testTraceNetAnyFull() {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "full");
-        assertThat(traceResult.matched(), is(true));
-        assertThat(traceResult.getTrace(), is(notNullValue()));
-        assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
-        assertThat(traceResult.getTrace(), containsString("Matched 6 chars"));
+        assertThat(traceResult.matched()).isTrue();
+        assertThat(traceResult.getTrace()).isNotNull();
+        assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
+        assertThat(traceResult.getTrace()).contains("Matched 6 chars");
     }
 
     @Test
     public void testInvalidTraceStyle() {
-        try {
-            netAnyPattern.trace("1.2.3", 1, "no_such_trace_style");
-            assertThat("Do not reach here", false);
-        } catch (RuntimeException e) {
-            assertThat(e.getMessage(), containsString("invalid trace style"));
-        }
+        Throwable throwable = catchThrowable(() -> netAnyPattern.trace("1.2.3", 1, "no_such_trace_style"));
+        assertThat(throwable.getMessage()).contains("invalid trace style");
     }
 
     @Test
     public void testTraceNetAnyJson() throws IOException {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "json");
-        assertThat(traceResult.matched(), is(true));
-        assertThat(traceResult.getTrace(), is(notNullValue()));
-        assertThat(traceResult.getTrace().length(), is(greaterThan(0)));
+        assertThat(traceResult.matched()).isTrue();
+        assertThat(traceResult.getTrace()).isNotNull();
+        assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
 
         ObjectMapper objectMapper = new ObjectMapper();
         Map<?, ?> m = objectMapper.readValue(traceResult.getTrace(), Map.class);
 
-        assertThat(m, IsMapContaining.hasEntry(is("match"), is(notNullValue())));
-        assertThat(m, IsMapContaining.hasEntry(is("nextpos"), is(8)));
+        assertThat(m.get("match")).isNotNull();
+        assertThat(m.get("nextpos")).isEqualTo(8);
     }
 }

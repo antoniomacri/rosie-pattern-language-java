@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineLoadCompileTest {
@@ -32,13 +30,13 @@ public class RosieEngineLoadCompileTest {
     @Test
     public void testLoad() {
         String packageName = rosie.load("package x; foo = \"foo\"");
-        assertThat(packageName, is(equalTo("x")));
+        assertThat(packageName).isEqualTo("x");
     }
 
     @Test
     public void testLoadNoPackage() {
         String packageName = rosie.load("foo = \"foo\"");
-        assertThat(packageName, is(nullValue()));
+        assertThat(packageName).isNull();
     }
 
     @Test
@@ -46,13 +44,13 @@ public class RosieEngineLoadCompileTest {
         testLoad();
 
         Pattern pattern = rosie.compile("x.foo");
-        assertThat("pattern", pattern, is(notNullValue()));
+        assertThat(pattern).isNotNull();
     }
 
     @Test
     public void testCompilePattern() {
         Pattern pattern = rosie.compile("[:digit:]+");
-        assertThat("pattern", pattern, is(notNullValue()));
+        assertThat(pattern).isNotNull();
     }
 
     @Test
@@ -64,11 +62,11 @@ public class RosieEngineLoadCompileTest {
             ObjectMapper objectMapper = new ObjectMapper();
             List errors = objectMapper.readValue(e.getErrors(), List.class);
 
-            assertThat("errors size", errors.size(), is(greaterThan(0)));
+            assertThat(errors.size()).isGreaterThan(0);
 
             Map firstError = (Map) errors.get(0);
-            assertThat("first error message", firstError.get("message"), is(notNullValue()));
-            assertThat("first error who", firstError.get("who"), is(equalTo("compiler")));
+            assertThat(firstError.get("message")).isNotNull();
+            assertThat(firstError.get("who")).isEqualTo("compiler");
         }
     }
 
@@ -81,11 +79,11 @@ public class RosieEngineLoadCompileTest {
             ObjectMapper objectMapper = new ObjectMapper();
             List errors = objectMapper.readValue(e.getErrors(), List.class);
 
-            assertThat("errors size", errors.size(), is(greaterThan(0)));
+            assertThat(errors.size()).isGreaterThan(0);
 
             Map firstError = (Map) errors.get(0);
-            assertThat("first error message", firstError.get("message"), is(notNullValue()));
-            assertThat("first error who", firstError.get("who"), is(equalTo("compiler")));
+            assertThat(firstError.get("message")).isNotNull();
+            assertThat(firstError.get("who")).isEqualTo("compiler");
         }
     }
 
@@ -98,11 +96,11 @@ public class RosieEngineLoadCompileTest {
             ObjectMapper objectMapper = new ObjectMapper();
             List errors = objectMapper.readValue(e.getErrors(), List.class);
 
-            assertThat("errors size", errors.size(), is(greaterThan(0)));
+            assertThat(errors.size()).isGreaterThan(0);
 
             Map firstError = (Map) errors.get(0);
-            assertThat("first error message", firstError.get("message"), is(notNullValue()));
-            assertThat("first error who", firstError.get("who"), is(equalTo("parser")));
+            assertThat(firstError.get("message")).isNotNull();
+            assertThat(firstError.get("who")).isEqualTo("parser");
         }
     }
 }

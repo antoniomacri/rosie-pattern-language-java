@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.number.OrderingComparison.greaterThan;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineMatchTest {
@@ -31,21 +29,21 @@ public class RosieEngineMatchTest {
         int skip = 1;
         Match match = pattern.match(input, skip, "json");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is("21"));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isEqualTo("21");
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(0)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(0);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
 
-        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
-        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
-        assertThat("match start", match.jsonMatchResult().start(), is(1));
-        assertThat("match end", match.jsonMatchResult().end(), is(3));
-        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
-        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
+        assertThat(match.jsonMatchResult()).isNotNull();
+        assertThat(match.jsonMatchResult().type()).isEqualTo("*");
+        assertThat(match.jsonMatchResult().start()).isEqualTo(1);
+        assertThat(match.jsonMatchResult().end()).isEqualTo(3);
+        assertThat(input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end())).isEqualTo(match.match());
+        assertThat(match.jsonMatchResult().subs()).isNull();
     }
 
     @Test
@@ -54,14 +52,14 @@ public class RosieEngineMatchTest {
 
         Match match = pattern.match("xyz", "json");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(false));
-        assertThat("matched string", match.match(), is(nullValue()));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isFalse();
+        assertThat(match.match()).isNull();
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
     }
 
     @Test
@@ -71,21 +69,21 @@ public class RosieEngineMatchTest {
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         Match match = pattern.match(input, "json");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is(equalTo(input.substring(0, input.length() - 3))));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isEqualTo(input.substring(0, input.length() - 3));
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
 
-        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
-        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
-        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
-        assertThat("match start", match.jsonMatchResult().start(), is(0));
-        assertThat("match end", match.jsonMatchResult().end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
-        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
+        assertThat(match.jsonMatchResult()).isNotNull();
+        assertThat(input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end())).isEqualTo(match.match());
+        assertThat(match.jsonMatchResult().type()).isEqualTo("*");
+        assertThat(match.jsonMatchResult().start()).isEqualTo(0);
+        assertThat(match.jsonMatchResult().end()).isEqualTo(input.length() - 3);  // due to the "xyz" at the end
+        assertThat(match.jsonMatchResult().subs()).isNull();
     }
 
     @Test
@@ -95,21 +93,21 @@ public class RosieEngineMatchTest {
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         Match match = pattern.match(input, 9, "json");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is(equalTo(input.substring(9, input.length() - 3))));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isEqualTo(input.substring(9, input.length() - 3));
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
 
-        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
-        assertThat("matched string", input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end()), is(match.match()));
-        assertThat("matched type", match.jsonMatchResult().type(), is("*"));
-        assertThat("match start", match.jsonMatchResult().start(), is(9));
-        assertThat("match end", match.jsonMatchResult().end(), is(equalTo(input.length() - 3)));  // due to the "xyz" at the end
-        assertThat("submatches", match.jsonMatchResult().subs(), is(nullValue()));
+        assertThat(match.jsonMatchResult()).isNotNull();
+        assertThat(input.substring(match.jsonMatchResult().start(), match.jsonMatchResult().end())).isEqualTo(match.match());
+        assertThat(match.jsonMatchResult().type()).isEqualTo("*");
+        assertThat(match.jsonMatchResult().start()).isEqualTo(9);
+        assertThat(match.jsonMatchResult().end()).isEqualTo(input.length() - 3);  // due to the "xyz" at the end
+        assertThat(match.jsonMatchResult().subs()).isNull();
     }
 
     @Test
@@ -119,14 +117,14 @@ public class RosieEngineMatchTest {
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         Match match = pattern.match(input, "line");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is(equalTo(input)));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isEqualTo(input);
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
     }
 
     @Test
@@ -135,12 +133,12 @@ public class RosieEngineMatchTest {
 
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         Match match = pattern.match(input, "bool");
-        assertThat("matched?", match.matches(), is(true));
+        assertThat(match.matches()).isTrue();
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
     }
 
     @Test
@@ -150,14 +148,14 @@ public class RosieEngineMatchTest {
         String input = "889900112233445566778899100101102103104105106107108109110xyz";
         Match match = pattern.match(input, "color");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), startsWith(new String(new byte[]{0x1B, '['})));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).startsWith(new String(new byte[]{0x1B, '['}));
 
-        assertThat("aborted", match.isAborted(), is(false));
-        assertThat("remaining", match.getRemainingBytes(), is(equalTo(3)));
-        assertThat("totalMillis", match.getTotalMillis(), is(greaterThan(0)));
-        assertThat("matchMillis", match.getMatchMillis(), is(greaterThan(0)));
+        assertThat(match.isAborted()).isFalse();
+        assertThat(match.getRemainingBytes()).isEqualTo(3);
+        assertThat(match.getTotalMillis()).isGreaterThan(0);
+        assertThat(match.getMatchMillis()).isGreaterThan(0);
     }
 
     @Test(expected = IllegalArgumentException.class)

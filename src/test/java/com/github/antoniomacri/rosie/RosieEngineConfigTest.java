@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineConfigTest {
@@ -26,12 +24,12 @@ public class RosieEngineConfigTest {
     @Test
     public void testConfig() {
         Configuration configuration = rosie.config();
-        assertThat(configuration, is(notNullValue()));
+        assertThat(configuration).isNotNull();
 
-        assertThat(configuration.getRosieVersion(), is(notNullValue()));
-        assertThat(configuration.getRosieHome(), is(notNullValue()));
-        assertThat(configuration.getLibdir(), is(notNullValue()));
-        assertThat(configuration.getRplVersion(), is(notNullValue()));
-        assertThat(configuration.getLibpath(), is(notNullValue()));
+        assertThat(configuration.getRosieVersion()).isNotBlank();
+        assertThat(configuration.getRosieHome()).isNotBlank();
+        assertThat(configuration.getLibdir()).isNotBlank();
+        assertThat(configuration.getRplVersion()).isNotBlank();
+        assertThat(configuration.getLibpath()).isNotBlank();
     }
 }

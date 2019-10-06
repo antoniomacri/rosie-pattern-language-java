@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineImportTest {
@@ -27,14 +25,14 @@ public class RosieEngineImportTest {
     public void testImport() {
         String packageName = rosie.importPackage("net");
 
-        assertThat("package name", packageName, is(equalTo("net")));
+        assertThat(packageName).isEqualTo("net");
     }
 
     @Test
     public void testImportWithAlias() {
         String packageName = rosie.importPackage("net", "foobar");
 
-        assertThat("package name", packageName, is(equalTo("net")));  // actual name inside the package
+        assertThat(packageName).isEqualTo("net");  // actual name inside the package
     }
 
     @Test
@@ -58,9 +56,9 @@ public class RosieEngineImportTest {
 
         Match match = pattern.match("1.2.3.4", 0, "color");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is(notNullValue()));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isNotNull();
     }
 
     @Test
@@ -70,16 +68,16 @@ public class RosieEngineImportTest {
 
         Match match = pattern.match("1.2.3.4", 0, "json");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(true));
-        assertThat("matched string", match.match(), is("1.2.3.4"));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isTrue();
+        assertThat(match.match()).isEqualTo("1.2.3.4");
 
-        assertThat("matched json", match.jsonMatchResult(), is(notNullValue()));
-        assertThat("matched type", match.jsonMatchResult().type(), is("net.any"));
-        assertThat("subs size", match.jsonMatchResult().subs(), hasSize(1));
-        assertThat("subs^2[0] matched string", match.jsonMatchResult().subs().get(0).subs().get(0).match(), is("1.2.3.4"));
-        assertThat("subs^2[0] matched type", match.jsonMatchResult().subs().get(0).subs().get(0).type(), is("net.ipv4"));
-        assertThat("subs^3", match.jsonMatchResult().subs().get(0).subs().get(0).subs(), is(nullValue()));
+        assertThat(match.jsonMatchResult()).isNotNull();
+        assertThat(match.jsonMatchResult().type()).isEqualTo("net.any");
+        assertThat(match.jsonMatchResult().subs()).as("subs size").hasSize(1);
+        assertThat(match.jsonMatchResult().subs().get(0).subs().get(0).match()).as("subs^2[0] matched string").isEqualTo("1.2.3.4");
+        assertThat(match.jsonMatchResult().subs().get(0).subs().get(0).type()).as("subs^2[0] matched type").isEqualTo("net.ipv4");
+        assertThat(match.jsonMatchResult().subs().get(0).subs().get(0).subs()).as("subs^3").isNull();
     }
 
     @Test
@@ -88,9 +86,9 @@ public class RosieEngineImportTest {
         Pattern pattern = rosie.compile("net.any");
         Match match = pattern.match("Hello, world!", "color");
 
-        assertThat("match result", match, is(notNullValue()));
-        assertThat("matched?", match.matches(), is(false));
-        assertThat("matched string", match.match(), is(nullValue()));
+        assertThat(match).isNotNull();
+        assertThat(match.matches()).isFalse();
+        assertThat(match.match()).isNull();
     }
 
     @Test(expected = RosieException.class)

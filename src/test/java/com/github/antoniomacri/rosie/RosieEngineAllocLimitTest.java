@@ -4,8 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineAllocLimitTest {
@@ -25,20 +24,20 @@ public class RosieEngineAllocLimitTest {
     @Test
     public void testNoInitialLimit() {
         AllocLimitResult limits = rosie.getAllocLimit();
-        assertThat(limits.getLimit(), is(0));
+        assertThat(limits.getLimit()).isEqualTo(0);
     }
 
     @Test
-    public void testSetLimit() {
+    public void testSetAndGetLimit() {
         AllocLimitResult limits;
 
         rosie.setAllocLimit(0);
         limits = rosie.getAllocLimit();
-        assertThat(limits.getLimit(), is(0));
+        assertThat(limits.getLimit()).isEqualTo(0);
 
         rosie.setAllocLimit(8199);
         limits = rosie.getAllocLimit();
-        assertThat(limits.getLimit(), is(8199));
+        assertThat(limits.getLimit()).isEqualTo(8199);
     }
 
     @Test
@@ -46,10 +45,10 @@ public class RosieEngineAllocLimitTest {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(0);
-        assertThat(limits.getLimit(), is(0));
+        assertThat(limits.getLimit()).isEqualTo(0);
 
         limits = rosie.setAllocLimit(8199);
-        assertThat(limits.getLimit(), is(8199));
+        assertThat(limits.getLimit()).isEqualTo(8199);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -62,14 +61,15 @@ public class RosieEngineAllocLimitTest {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(8199);
-        assertThat(limits.getLimit(), is(8199));
+        assertThat(limits.getLimit()).isEqualTo(8199);
 
         try {
             rosie.setAllocLimit(8191);
         } catch (IllegalArgumentException e) {
+            // expected
         }
 
         limits = rosie.getAllocLimit();
-        assertThat(limits.getLimit(), is(8199));
+        assertThat(limits.getLimit()).isEqualTo(8199);
     }
 }

@@ -4,8 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieEngineLibpathTest {
@@ -25,11 +24,11 @@ public class RosieEngineLibpathTest {
     @Test
     public void testGetSetLibpath() {
         String libpath = rosie.getLibpath();
-        assertThat(libpath, is(notNullValue()));
+        assertThat(libpath).isNotNull();
 
         String newpath = "foo bar baz";
         rosie.setLibpath(newpath);
         String testpath = rosie.getLibpath();
-        assertThat(testpath, is(equalTo(newpath)));
+        assertThat(testpath).isEqualTo(newpath);
     }
 }

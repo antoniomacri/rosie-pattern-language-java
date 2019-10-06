@@ -4,9 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class PatternTest {
@@ -27,6 +25,6 @@ public class PatternTest {
     public void testCompilePattern() {
         String expression = "[:digit:]+";
         Pattern pattern = rosie.compile(expression);
-        assertThat("pattern", String.valueOf(pattern), is(equalTo(expression)));
+        assertThat(String.valueOf(pattern)).isEqualTo(expression);
     }
 }

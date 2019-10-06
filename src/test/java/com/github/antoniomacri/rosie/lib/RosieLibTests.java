@@ -2,8 +2,7 @@ package com.github.antoniomacri.rosie.lib;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class RosieLibTests {
@@ -11,35 +10,35 @@ public class RosieLibTests {
     public void testAllocationByValueEmptyString() {
         String test = "";
         RosieString.ByValue byValue = RosieLib.rosie_new_string(test, test.length());
-        assertThat(byValue, is(notNullValue()));
-        assertThat(byValue.len.intValue(), is(equalTo(test.length())));
-        assertThat(byValue.toString(), is(equalTo(test)));
+        assertThat(byValue).isNotNull();
+        assertThat(byValue.len.intValue()).isEqualTo(test.length());
+        assertThat(byValue.toString()).isEqualTo(test);
     }
 
     @Test
     public void testAllocationByValueNonEmptyString() {
         String test = "ciao";
         RosieString.ByValue byValue = RosieLib.rosie_new_string(test, test.length());
-        assertThat(byValue, is(notNullValue()));
-        assertThat(byValue.len.intValue(), is(equalTo(test.length())));
-        assertThat(byValue.toString(), is(equalTo(test)));
+        assertThat(byValue).isNotNull();
+        assertThat(byValue.len.intValue()).isEqualTo(test.length());
+        assertThat(byValue.toString()).isEqualTo(test);
     }
 
     @Test
     public void testAllocationByReferenceEmptyString() {
         String test = "";
         RosieString byReference = RosieLib.rosie_new_string_ptr(test, test.length());
-        assertThat(byReference, is(notNullValue()));
-        assertThat(byReference.len.intValue(), is(equalTo(test.length())));
-        assertThat(byReference.toString(), is(equalTo(test)));
+        assertThat(byReference).isNotNull();
+        assertThat(byReference.len.intValue()).isEqualTo(test.length());
+        assertThat(byReference.toString()).isEqualTo(test);
     }
 
     @Test
     public void testAllocationByReferenceNonEmptyString() {
         String test = "ciao";
         RosieString byReference = RosieLib.rosie_new_string_ptr(test, test.length());
-        assertThat(byReference, is(notNullValue()));
-        assertThat(byReference.len.intValue(), is(equalTo(test.length())));
-        assertThat(byReference.toString(), is(equalTo(test)));
+        assertThat(byReference).isNotNull();
+        assertThat(byReference.len.intValue()).isEqualTo(test.length());
+        assertThat(byReference.toString()).isEqualTo(test);
     }
 }
