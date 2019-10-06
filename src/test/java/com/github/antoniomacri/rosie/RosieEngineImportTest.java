@@ -86,7 +86,7 @@ public class RosieEngineImportTest {
     public void testMatchKo() {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
-        Match match = pattern.match("Hello, world!", 0, "color");
+        Match match = pattern.match("Hello, world!", "color");
 
         assertThat("match result", match, is(notNullValue()));
         assertThat("matched?", match.matches(), is(false));

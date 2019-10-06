@@ -2,20 +2,28 @@ package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.io.IOException;
 import java.util.*;
 
 
 /**
- * not thread-safe
+ * An object describing a match result.
+ * <p>
+ * Note: this class is not thread-safe.
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
 public class Match {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private final Encoder encoder;
 
     private final Boolean bool;
     private final String data;
-    private final Encoder encoder;
     private final int leftover;
     private final int abend;
     private final int ttotal;
@@ -25,24 +33,58 @@ public class Match {
     private JsonMatchResult matchResult;
 
 
-    Match(Boolean bool, int leftover, int abend, int ttotal, int tmatch) {
-        this.encoder = Encoder.BOOL;
-        this.bool = bool;
-        this.data = null;
-        this.leftover = leftover;
-        this.abend = abend;
-        this.ttotal = ttotal;
-        this.tmatch = tmatch;
+    static Match failed(int leftover, int abend, int ttotal, int tmatch) {
+        return builder()
+                .encoder(Encoder.BOOL).bool(false)
+                .leftover(leftover).abend(abend).ttotal(ttotal).tmatch(tmatch)
+                .build();
     }
 
-    Match(String encoder, String data, int leftover, int abend, int ttotal, int tmatch) {
-        this.encoder = Encoder.valueOf(encoder.toUpperCase());
-        this.bool = null;
-        this.data = data;
-        this.leftover = leftover;
-        this.abend = abend;
-        this.ttotal = ttotal;
-        this.tmatch = tmatch;
+    static Match noData(int leftover, int abend, int ttotal, int tmatch) {
+        return builder()
+                .encoder(Encoder.BOOL).bool(true)
+                .leftover(leftover).abend(abend).ttotal(ttotal).tmatch(tmatch)
+                .build();
+    }
+
+    static Match withData(String encoder, String data, int leftover, int abend, int ttotal, int tmatch) {
+        return builder()
+                .encoder(Encoder.valueOf(encoder.toUpperCase())).data(data)
+                .leftover(leftover).abend(abend).ttotal(ttotal).tmatch(tmatch)
+                .build();
+    }
+
+
+    /**
+     * Indicates whether the match ended abnormally by encountering an RPL error pattern.
+     */
+    public boolean isAborted() {
+        return abend != 0;
+    }
+
+    /**
+     * When the match succeeded, indicates the number of bytes left unmatched.
+     */
+    public int getRemainingBytes() {
+        return leftover;
+    }
+
+    /**
+     * The number of microseconds spent in the call.
+     * <p>
+     * Notice this is subject to the platform's clock resolution.
+     */
+    public int getTotalMillis() {
+        return ttotal;
+    }
+
+    /**
+     * The number of microseconds spent actually doing the matching.
+     * <p>
+     * The value returned by {@link #getTotalMillis()} includes also time spent encoding the results to produce data.
+     */
+    public int getMatchMillis() {
+        return tmatch;
     }
 
 
@@ -55,6 +97,9 @@ public class Match {
         return data != null;
     }
 
+    /**
+     * A string encoding of the results.
+     */
     public String match() {
         if (encoder == Encoder.JSON) {
             return jsonMatchResult() != null ? jsonMatchResult().match() : null;
@@ -62,21 +107,6 @@ public class Match {
         return data;
     }
 
-    public int skipped() {
-        return abend;
-    }
-
-    public int remaining() {
-        return leftover;
-    }
-
-    public int totalMillis() {
-        return ttotal;
-    }
-
-    public int matchMillis() {
-        return tmatch;
-    }
 
     public MatchResult jsonMatchResult() {
         if (matchResult == null && rootNode() != null) {
@@ -92,7 +122,7 @@ public class Match {
         }
         if (rootNode == null && data != null) {
             try {
-                rootNode = objectMapper.readTree(data);
+                rootNode = OBJECT_MAPPER.readTree(data);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

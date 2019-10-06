@@ -82,16 +82,16 @@ public class Pattern implements Closeable {
             int tmatch = Cmatch.tmatch;
             if (Cmatch.data.ptr == null) {
                 if (Cmatch.data.len.intValue() == MatchStatus.NO_MATCH) {
-                    return new Match(false, left, abend, ttotal, tmatch);
+                    return Match.failed(left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
-                    return new Match(true, left, abend, ttotal, tmatch);
+                    return Match.noData(left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_ENCODER) {
                     throw new IllegalArgumentException("invalid output encoder");
                 } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_PATTERN) {
                     throw new IllegalStateException("invalid compiled pattern");
                 }
             }
-            return new Match(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
+            return Match.withData(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
         }
     }
 
