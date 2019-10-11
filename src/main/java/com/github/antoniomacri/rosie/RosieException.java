@@ -8,7 +8,7 @@ public class RosieException extends RuntimeException {
     }
 
     public RosieException(String message, String errors) {
-        super(message);
+        super(message + ": " + errors);
         this.errors = errors;
     }
 
