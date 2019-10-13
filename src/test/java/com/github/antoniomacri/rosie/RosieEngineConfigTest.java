@@ -23,7 +23,7 @@ public class RosieEngineConfigTest {
 
     @Test
     public void testConfig() {
-        Configuration configuration = rosie.config();
+        Configuration configuration = rosie.getConfiguration();
         assertThat(configuration).isNotNull();
 
         assertThat(configuration.getRosieVersion()).isNotBlank();

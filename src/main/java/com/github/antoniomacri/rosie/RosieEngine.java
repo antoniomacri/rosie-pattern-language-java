@@ -43,7 +43,7 @@ public class RosieEngine implements Closeable {
      * The returned {@link Pattern} will be available until closed or until the engine is closed.
      *
      * @param expression the RPL expression
-     * @return an RPL pattern that can be matched against input strings
+     * @return the compiled RPL pattern that can be matched against input strings
      */
     public Pattern compile(String expression) throws RosieException {
         try (RosieString rsErrors = RosieString.create(); RosieString rsExpression = RosieString.create(expression)) {
@@ -62,6 +62,8 @@ public class RosieEngine implements Closeable {
 
     /**
      * Loads and compiles RPL code, storing the resulting bindings in the engine's environment.
+     * <p>
+     * The given code can contain a package or simply top-level definitions.
      *
      * @param rplCode the RPL code
      * @return the package name, if the RPL code contained a package declaration, or {@code null}.
@@ -82,6 +84,8 @@ public class RosieEngine implements Closeable {
 
     /**
      * Loads and compiles RPL code from a file, storing the resulting bindings in the engine's environment.
+     * <p>
+     * The file is searched in the current working directory. It can contain a package or simply top-level definitions.
      *
      * @param rplFile the RPL source file
      * @return the package name, if the RPL file contained a package declaration, or {@code null}.
@@ -106,6 +110,9 @@ public class RosieEngine implements Closeable {
      * Calling {@link #importPackage} is equivalent to calling {@link #load(String)} with the string "{@code import
      * <packageName>}", except that {@link #importPackage} will always find and load the RPL package in the
      * filesystem, whereas {@link #load(String)} does nothing if the package has already been loaded into the engine.
+     * <p>
+     * Rosie searches the package file in a configured list of directories: the "libpath" (see {@link #setLibpath}),
+     * the environment variable $ROSIE_LIBPATH, the "libdir" (the "rpl" directory of the Rosie installation).
      *
      * @param packageName the name of the package to load
      * @return the name of the package loaded
@@ -120,6 +127,9 @@ public class RosieEngine implements Closeable {
      * Calling {@link #importPackage} is equivalent to calling {@link #load(String)} with the string "{@code import
      * <packageName> as <asName>}", except that {@link #importPackage} will always find and load the RPL package in the
      * filesystem, whereas {@link #load(String)} does nothing if the package has already been loaded into the engine.
+     * <p>
+     * Rosie searches the package file in a configured list of directories: the "libpath" (see {@link #setLibpath}),
+     * the environment variable $ROSIE_LIBPATH, the "libdir" (the "rpl" directory of the Rosie installation).
      *
      * @param packageName the name of the package to load
      * @param asName      the alias to bind the package to
@@ -142,9 +152,9 @@ public class RosieEngine implements Closeable {
 
 
     /**
-     * Retrieves the configuration of an engine and of the Rosie installation that created it.
+     * Retrieves the configuration of the engine and of the Rosie installation that created it.
      */
-    public Configuration config() {
+    public Configuration getConfiguration() {
         try (RosieString rsJsonResult = RosieString.create()) {
             int result = RosieLib.rosie_config(engine, rsJsonResult);
             if (result != 0) {
@@ -175,6 +185,9 @@ public class RosieEngine implements Closeable {
 
     /**
      * Sets the libpath.
+     * <p>
+     * The previous libpath is replaced, if not explicitly included (for instance, the directory of the Rosie standard
+     * library must be explicitly included to make Rosie search there).
      *
      * @param libpath the new desired libpath
      */
