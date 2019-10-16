@@ -1,5 +1,7 @@
 package com.github.antoniomacri.rosie;
 
+import com.github.antoniomacri.rosie.encoding.Decoder;
+import com.github.antoniomacri.rosie.encoding.Decoders;
 import com.github.antoniomacri.rosie.lib.RosieLib;
 import com.github.antoniomacri.rosie.lib.RosieMatch;
 import com.github.antoniomacri.rosie.lib.RosieString;
@@ -10,7 +12,11 @@ import java.io.Closeable;
 import java.util.Objects;
 
 
+/**
+ * Represents a compiled RPL pattern that can be matched against input strings.
+ */
 public class Pattern implements Closeable {
+
     /**
      * Pointer to the rosie engine.
      */
@@ -39,45 +45,51 @@ public class Pattern implements Closeable {
 
 
     /**
-     * Matches the pattern against an input string using the JSON output encoder.
+     * Matches the pattern against an input string and returns {@code true} if the match succeeds.
      *
      * @param input the input string
      */
-    public Match match(String input) {
-        return match(input, 0, "json");
+    public boolean matches(String input) {
+        return match(input, 0, Decoders.BOOL_VALUE);
     }
 
     /**
-     * Matches the pattern against an input string using the JSON output encoder.
+     * Matches the pattern against an input string and returns {@code true} if the match succeeds.
      *
      * @param input the input string
-     * @param start 0-based index
+     * @param start 0-based beginning index (inclusive)
      */
-    public Match match(String input, int start) {
-        return match(input, start, "json");
+    public boolean matches(String input, int start) {
+        return match(input, start, Decoders.BOOL_VALUE);
     }
 
     /**
-     * Matches the pattern against an input string using the specified output encoder.
+     * Matches the pattern against an input string and constructs a result using the specified output decoder.
+     * <p>
+     * Rosie supports multiple ways of communicating match results, each one associated with an output decoder.
+     * See {@link Decoders} for a list of supported decoders.
      *
      * @param input   the input string
-     * @param encoder the output encoder
+     * @param decoder the output decoder
      */
-    public Match match(String input, String encoder) {
-        return match(input, 0, encoder);
+    public <T> T match(String input, Decoder<T> decoder) {
+        return match(input, 0, decoder);
     }
 
     /**
-     * Matches the pattern against an input string using the specified output encoder.
+     * Matches the pattern against an input string and constructs a result using the specified output decoder.
+     * <p>
+     * Rosie supports multiple ways of communicating match results, each one associated with an output decoder.
+     * See {@link Decoders} for a list of supported decoders.
      *
      * @param input   the input string
-     * @param start   0-based index
-     * @param encoder the output encoder
+     * @param start   0-based beginning index (inclusive)
+     * @param decoder the output decoder
      */
-    public Match match(String input, int start, String encoder) {
+    public <T> T match(String input, int start, Decoder<T> decoder) {
         try (RosieString Cinput = RosieString.create(input)) {
             RosieMatch Cmatch = new RosieMatch();
-            int ok = RosieLib.rosie_match(engine, pat, start + 1, encoder, Cinput, Cmatch);
+            int ok = RosieLib.rosie_match(engine, pat, start + 1, decoder.getEncodingName(), Cinput, Cmatch);
             if (ok != 0) {
                 throw new RuntimeException("match() failed (please report this as a bug)");
             }
@@ -86,18 +98,25 @@ public class Pattern implements Closeable {
             int abend = Cmatch.abend;
             int ttotal = Cmatch.ttotal;
             int tmatch = Cmatch.tmatch;
+
+            Match match;
             if (Cmatch.data.ptr == null) {
                 if (Cmatch.data.len.intValue() == MatchStatus.NO_MATCH) {
-                    return Match.failed(left, abend, ttotal, tmatch);
+                    match = Match.failed(left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
-                    return Match.noData(left, abend, ttotal, tmatch);
+                    match = Match.noData(left, abend, ttotal, tmatch);
                 } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_ENCODER) {
                     throw new IllegalArgumentException("invalid output encoder");
                 } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_PATTERN) {
                     throw new IllegalStateException("invalid compiled pattern");
+                } else {
+                    throw new IllegalStateException("Unexpected result from librosie");
                 }
+            } else {
+                match = Match.withData(Cmatch.data.toString(), left, abend, ttotal, tmatch);
             }
-            return Match.withData(encoder, Cmatch.data.toString(), left, abend, ttotal, tmatch);
+
+            return decoder.decode(match);
         }
     }
 
@@ -106,7 +125,7 @@ public class Pattern implements Closeable {
      * Matches the pattern against an input string, tracing with the specified style.
      *
      * @param input the input string
-     * @param start 0-based index
+     * @param start 0-based beginning index (inclusive)
      * @param style the tracing style
      */
     public TraceResult trace(String input, int start, String style) {
