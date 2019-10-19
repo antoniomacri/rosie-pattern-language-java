@@ -1,9 +1,9 @@
 package com.github.antoniomacri.rosie;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class RosieEngineTraceTest {
     private Pattern netAnyPattern;
     private Pattern netIpPattern;
 
-    @Before
+    @BeforeEach
     public void init() {
         rosie = new RosieEngine();
         rosie.importPackage("net");
@@ -25,7 +25,7 @@ public class RosieEngineTraceTest {
         netIpPattern = rosie.compile("net.ip");
     }
 
-    @After
+    @AfterEach
     public void close() {
         rosie.close();
     }

@@ -1,21 +1,22 @@
 package com.github.antoniomacri.rosie;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class RosieEngineAllocLimitTest {
     private RosieEngine rosie;
 
-    @Before
+    @BeforeEach
     public void init() {
         rosie = new RosieEngine();
     }
 
-    @After
+    @AfterEach
     public void close() {
         rosie.close();
     }
@@ -51,9 +52,9 @@ public class RosieEngineAllocLimitTest {
         assertThat(limits.getLimit()).isEqualTo(8199);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAllocBelowThreadholdRaisesException() {
-        rosie.setAllocLimit(8191);  // too low
+        assertThrows(IllegalArgumentException.class, () -> rosie.setAllocLimit(8191));
     }
 
     @Test

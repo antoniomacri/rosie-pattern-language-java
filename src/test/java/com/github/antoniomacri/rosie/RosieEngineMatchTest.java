@@ -10,23 +10,23 @@ import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import com.revinate.assertj.json.JsonPathAssert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class RosieEngineMatchTest {
     private RosieEngine rosie;
 
-
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
             private final JsonProvider jsonProvider = new JacksonJsonProvider();
@@ -49,12 +49,12 @@ public class RosieEngineMatchTest {
         });
     }
 
-    @Before
+    @BeforeEach
     public void init() {
         rosie = new RosieEngine();
     }
 
-    @After
+    @AfterEach
     public void close() {
         rosie.close();
     }
@@ -426,16 +426,18 @@ public class RosieEngineMatchTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMatchInvalidEncoderName() {
-        Pattern pattern = rosie.compile("[:digit:]+");
+        assertThrows(IllegalArgumentException.class, () -> {
+            Pattern pattern = rosie.compile("[:digit:]+");
 
-        String input = "889900112233445566778899100101102103104105106107108109110xyz";
-        pattern.match(input, new Decoder<Match>("this_is_not_a_valid_encoder_name") {
-            @Override
-            public Match decode(Match match) {
-                return null;
-            }
+            String input = "889900112233445566778899100101102103104105106107108109110xyz";
+            pattern.match(input, new Decoder<Match>("this_is_not_a_valid_encoder_name") {
+                @Override
+                public Match decode(Match match) {
+                    return null;
+                }
+            });
         });
     }
 }

@@ -1,8 +1,8 @@
 package com.github.antoniomacri.rosie;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,12 +10,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RosieEngineConfigTest {
     private RosieEngine rosie;
 
-    @Before
+    @BeforeEach
     public void init() {
         rosie = new RosieEngine();
     }
 
-    @After
+    @AfterEach
     public void close() {
         rosie.close();
     }
