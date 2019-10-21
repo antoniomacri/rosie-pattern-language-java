@@ -36,12 +36,12 @@ public class RosieString extends Structure implements AutoCloseable {
 
 
     public static RosieString create() {
-        RosieString str = new RosieString();
+        RosieString str = new RosieString.ByValue();
         return str;
     }
 
     public static RosieString create(String expression) {
-        RosieString str = RosieLib.rosie_new_string_ptr(expression, expression.length());
+        RosieString str = RosieLib.rosie_new_string(expression, expression.length());
         return str;
     }
 
@@ -52,7 +52,7 @@ public class RosieString extends Structure implements AutoCloseable {
     @Override
     public void close() {
         if (ptr != null) {
-            RosieLib.rosie_free_string_ptr(this);
+            RosieLib.rosie_free_string((RosieString.ByValue) this);
             ptr = null;
         }
     }
