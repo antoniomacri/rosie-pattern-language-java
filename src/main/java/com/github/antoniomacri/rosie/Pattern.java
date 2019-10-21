@@ -100,20 +100,20 @@ public class Pattern implements Closeable {
             int tmatch = Cmatch.tmatch;
 
             Match match;
-            if (Cmatch.data.ptr == null) {
-                if (Cmatch.data.len.intValue() == MatchStatus.NO_MATCH) {
+            if (Cmatch.dataPtr == null) {
+                if (Cmatch.dataLen.intValue() == MatchStatus.NO_MATCH) {
                     match = Match.failed(left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
+                } else if (Cmatch.dataLen.intValue() == MatchStatus.MATCH_WITHOUT_DATA) {
                     match = Match.noData(left, abend, ttotal, tmatch);
-                } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_ENCODER) {
+                } else if (Cmatch.dataLen.intValue() == MatchStatus.ERR_NO_ENCODER) {
                     throw new IllegalArgumentException("invalid output encoder");
-                } else if (Cmatch.data.len.intValue() == MatchStatus.ERR_NO_PATTERN) {
+                } else if (Cmatch.dataLen.intValue() == MatchStatus.ERR_NO_PATTERN) {
                     throw new IllegalStateException("invalid compiled pattern");
                 } else {
                     throw new IllegalStateException("Unexpected result from librosie");
                 }
             } else {
-                match = Match.withData(Cmatch.data.toString(), left, abend, ttotal, tmatch);
+                match = Match.withData(Cmatch.toString(), left, abend, ttotal, tmatch);
             }
 
             return decoder.decode(match);
