@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class RosieLibTests {
+class RosieLibTests {
     @Test
-    public void testAllocationByValueEmptyString() {
+    void testAllocationByValueEmptyString() {
         String test = "";
         RosieString.ByValue byValue = RosieLib.rosie_new_string(test, test.length());
         assertThat(byValue).isNotNull();
@@ -16,7 +16,7 @@ public class RosieLibTests {
     }
 
     @Test
-    public void testAllocationByValueNonEmptyString() {
+    void testAllocationByValueNonEmptyString() {
         String test = "ciao";
         RosieString.ByValue byValue = RosieLib.rosie_new_string(test, test.length());
         assertThat(byValue).isNotNull();
@@ -25,7 +25,7 @@ public class RosieLibTests {
     }
 
     @Test
-    public void testAllocationByReferenceEmptyString() {
+    void testAllocationByReferenceEmptyString() {
         String test = "";
         RosieString byReference = RosieLib.rosie_new_string_ptr(test, test.length());
         assertThat(byReference).isNotNull();
@@ -34,7 +34,7 @@ public class RosieLibTests {
     }
 
     @Test
-    public void testAllocationByReferenceNonEmptyString() {
+    void testAllocationByReferenceNonEmptyString() {
         String test = "ciao";
         RosieString byReference = RosieLib.rosie_new_string_ptr(test, test.length());
         assertThat(byReference).isNotNull();

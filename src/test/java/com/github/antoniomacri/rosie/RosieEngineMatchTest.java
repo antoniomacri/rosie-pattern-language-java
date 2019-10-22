@@ -23,11 +23,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class RosieEngineMatchTest {
+class RosieEngineMatchTest {
     private RosieEngine rosie;
 
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
             private final JsonProvider jsonProvider = new JacksonJsonProvider();
             private final MappingProvider mappingProvider = new JacksonMappingProvider();
@@ -50,18 +50,18 @@ public class RosieEngineMatchTest {
     }
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testMatchesSuccess() {
+    void testMatchesSuccess() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("123");
@@ -69,7 +69,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testMatchesNotFull() {
+    void testMatchesNotFull() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("123a");
@@ -77,7 +77,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testMatchesFailure() {
+    void testMatchesFailure() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("a123");
@@ -85,7 +85,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testMatchesSuccessWithSkip() {
+    void testMatchesSuccessWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("a123", 1);
@@ -93,7 +93,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testMatchesNotFullWithSkip() {
+    void testMatchesNotFullWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("a123a", 1);
@@ -101,7 +101,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testMatchesFailureWithSkip() {
+    void testMatchesFailureWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         boolean matches = pattern.matches("0a123", 1);
@@ -110,7 +110,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testBoolMatchSuccess() {
+    void testBoolMatchSuccess() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123", Decoders.BOOL);
@@ -122,7 +122,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testBoolMatchSuccessWithRemaining() {
+    void testBoolMatchSuccessWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123a", Decoders.BOOL);
@@ -134,7 +134,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testBoolMatchFailed() {
+    void testBoolMatchFailed() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", Decoders.BOOL);
@@ -145,7 +145,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testBoolMatchSuccessWithSkip() {
+    void testBoolMatchSuccessWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", 1, Decoders.BOOL);
@@ -157,7 +157,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testBoolMatchSuccessWithSkipWithRemaining() {
+    void testBoolMatchSuccessWithSkipWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123a", 1, Decoders.BOOL);
@@ -169,7 +169,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testBoolMatchFailedWithSkip() {
+    void testBoolMatchFailedWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("0a123", 1, Decoders.BOOL);
@@ -181,7 +181,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testLineMatchSuccess() {
+    void testLineMatchSuccess() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123", Decoders.LINE);
@@ -193,7 +193,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testLineMatchSuccessWithRemaining() {
+    void testLineMatchSuccessWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123a", Decoders.LINE);
@@ -205,7 +205,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testLineMatchFailed() {
+    void testLineMatchFailed() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", Decoders.LINE);
@@ -216,7 +216,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testLineMatchSuccessWithSkip() {
+    void testLineMatchSuccessWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", 1, Decoders.LINE);
@@ -228,7 +228,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testLineMatchSuccessWithSkipWithRemaining() {
+    void testLineMatchSuccessWithSkipWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123a", 1, Decoders.LINE);
@@ -240,7 +240,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testLineMatchFailedWithSkip() {
+    void testLineMatchFailedWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("0a123", 1, Decoders.LINE);
@@ -252,7 +252,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testColorMatchSuccess() {
+    void testColorMatchSuccess() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123", Decoders.COLOR);
@@ -264,7 +264,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testColorMatchSuccessWithRemaining() {
+    void testColorMatchSuccessWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123a", Decoders.COLOR);
@@ -276,7 +276,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testColorMatchFailed() {
+    void testColorMatchFailed() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", Decoders.COLOR);
@@ -287,7 +287,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testColorMatchSuccessWithSkip() {
+    void testColorMatchSuccessWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", 1, Decoders.COLOR);
@@ -299,7 +299,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testColorMatchSuccessWithSkipWithRemaining() {
+    void testColorMatchSuccessWithSkipWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123a", 1, Decoders.COLOR);
@@ -311,7 +311,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testColorMatchFailedWithSkip() {
+    void testColorMatchFailedWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("0a123", 1, Decoders.COLOR);
@@ -323,7 +323,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testJsonMatchSuccess() {
+    void testJsonMatchSuccess() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123", Decoders.JSON);
@@ -338,7 +338,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testJsonMatchSuccessWithRemaining() {
+    void testJsonMatchSuccessWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("123a", Decoders.JSON);
@@ -353,7 +353,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testJsonMatchFailed() {
+    void testJsonMatchFailed() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", Decoders.JSON);
@@ -364,7 +364,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testJsonMatchSuccessWithSkip() {
+    void testJsonMatchSuccessWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123", 1, Decoders.JSON);
@@ -379,7 +379,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testJsonMatchSuccessWithSkipWithRemaining() {
+    void testJsonMatchSuccessWithSkipWithRemaining() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("a123a", 1, Decoders.JSON);
@@ -394,7 +394,7 @@ public class RosieEngineMatchTest {
     }
 
     @Test
-    public void testJsonMatchFailedWithSkip() {
+    void testJsonMatchFailedWithSkip() {
         Pattern pattern = rosie.compile("[:digit:]+");
 
         Match match = pattern.match("0a123", 1, Decoders.JSON);
@@ -406,7 +406,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testJsonMatchSuccessNested() {
+    void testJsonMatchSuccessNested() {
         rosie.importPackage("net");
         Pattern pattern = rosie.compile("net.any");
 
@@ -427,7 +427,7 @@ public class RosieEngineMatchTest {
 
 
     @Test
-    public void testMatchInvalidEncoderName() {
+    void testMatchInvalidEncoderName() {
         assertThrows(IllegalArgumentException.class, () -> {
             Pattern pattern = rosie.compile("[:digit:]+");
 

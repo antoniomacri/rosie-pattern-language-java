@@ -7,22 +7,22 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class RosieEngineLibpathTest {
+class RosieEngineLibpathTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testGetSetLibpath() {
+    void testGetSetLibpath() {
         String libpath = rosie.getLibpath();
         assertThat(libpath).isNotNull();
 
@@ -33,7 +33,7 @@ public class RosieEngineLibpathTest {
     }
 
     @Test
-    public void testGetSetLibpathOverwrite() {
+    void testGetSetLibpathOverwrite() {
         String libpath = rosie.getLibpath();
         assertThat(libpath).isNotNull();
 
@@ -49,7 +49,7 @@ public class RosieEngineLibpathTest {
     }
 
     @Test
-    public void testSetLibpathGetFromConfig() {
+    void testSetLibpathGetFromConfig() {
         String libpath = rosie.getConfiguration().getLibpath();
         assertThat(libpath).isNotNull();
 

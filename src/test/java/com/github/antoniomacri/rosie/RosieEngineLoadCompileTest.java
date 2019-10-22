@@ -13,34 +13,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 
-public class RosieEngineLoadCompileTest {
+class RosieEngineLoadCompileTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testLoad() {
+    void testLoad() {
         String packageName = rosie.load("package x; foo = \"foo\"");
         assertThat(packageName).isEqualTo("x");
     }
 
     @Test
-    public void testLoadNoPackage() {
+    void testLoadNoPackage() {
         String packageName = rosie.load("foo = \"foo\"");
         assertThat(packageName).isNull();
     }
 
     @Test
-    public void testCompileFoo() {
+    void testCompileFoo() {
         testLoad();
 
         Pattern pattern = rosie.compile("x.foo");
@@ -48,13 +48,13 @@ public class RosieEngineLoadCompileTest {
     }
 
     @Test
-    public void testCompilePattern() {
+    void testCompilePattern() {
         Pattern pattern = rosie.compile("[:digit:]+");
         assertThat(pattern).isNotNull();
     }
 
     @Test
-    public void testCompileInvalidPattern() throws IOException {
+    void testCompileInvalidPattern() throws IOException {
         Throwable throwable = catchThrowable(() -> rosie.compile("[:foobar:]+"));
         assertThat(throwable).isInstanceOf(RosieException.class);
 
@@ -71,7 +71,7 @@ public class RosieEngineLoadCompileTest {
     }
 
     @Test
-    public void testCompileInvalidPatternNumInt() throws IOException {
+    void testCompileInvalidPatternNumInt() throws IOException {
         Throwable throwable = catchThrowable(() -> rosie.compile("num.int"));
         assertThat(throwable).isInstanceOf(RosieException.class);
 
@@ -88,7 +88,7 @@ public class RosieEngineLoadCompileTest {
     }
 
     @Test
-    public void testLoadInvalidPatternFoo() throws IOException {
+    void testLoadInvalidPatternFoo() throws IOException {
         Throwable throwable = catchThrowable(() -> rosie.load("foo = \""));
         assertThat(throwable).isInstanceOf(RosieException.class);
 

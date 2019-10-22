@@ -12,13 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 
-public class RosieEngineTraceTest {
+class RosieEngineTraceTest {
     private RosieEngine rosie;
     private Pattern netAnyPattern;
     private Pattern netIpPattern;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
         rosie.importPackage("net");
         netAnyPattern = rosie.compile("net.any");
@@ -26,13 +26,13 @@ public class RosieEngineTraceTest {
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testTraceNetAny() {
+    void testTraceNetAny() {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "condensed");
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();
@@ -40,7 +40,7 @@ public class RosieEngineTraceTest {
     }
 
     @Test
-    public void testTraceNetIp() {
+    void testTraceNetIp() {
         TraceResult traceResult = netIpPattern.trace("1.2.3", 1, "condensed");
         assertThat(traceResult.matched()).isFalse();
         assertThat(traceResult.getTrace()).isNotNull();
@@ -48,7 +48,7 @@ public class RosieEngineTraceTest {
     }
 
     @Test
-    public void testTraceNetAnyFull() {
+    void testTraceNetAnyFull() {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "full");
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();
@@ -57,13 +57,13 @@ public class RosieEngineTraceTest {
     }
 
     @Test
-    public void testInvalidTraceStyle() {
+    void testInvalidTraceStyle() {
         Throwable throwable = catchThrowable(() -> netAnyPattern.trace("1.2.3", 1, "no_such_trace_style"));
         assertThat(throwable.getMessage()).contains("invalid trace style");
     }
 
     @Test
-    public void testTraceNetAnyJson() throws IOException {
+    void testTraceNetAnyJson() throws IOException {
         TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "json");
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();

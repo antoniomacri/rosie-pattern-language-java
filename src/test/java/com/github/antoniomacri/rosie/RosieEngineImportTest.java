@@ -8,43 +8,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class RosieEngineImportTest {
+class RosieEngineImportTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testImport() {
+    void testImport() {
         String packageName = rosie.importPackage("net");
 
         assertThat(packageName).isEqualTo("net");
     }
 
     @Test
-    public void testImportWithAlias() {
+    void testImportWithAlias() {
         String packageName = rosie.importPackage("net", "foobar");
 
         assertThat(packageName).isEqualTo("net");  // actual name inside the package
     }
 
     @Test
-    public void testImportAndCompile() {
+    void testImportAndCompile() {
         testImport();
 
         rosie.compile("net.any");
     }
 
     @Test
-    public void testImportAndCompileWithAlias() {
+    void testImportAndCompileWithAlias() {
         testImportWithAlias();
 
         rosie.compile("foobar.any");
@@ -52,7 +52,7 @@ public class RosieEngineImportTest {
 
 
     @Test
-    public void testImportFailure() {
+    void testImportFailure() {
         assertThrows(RosieException.class, () -> rosie.importPackage("THISPACKAGEDOESNOTEXIST"));
     }
 }

@@ -8,28 +8,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
-public class RosieEngineAllocLimitTest {
+class RosieEngineAllocLimitTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testNoInitialLimit() {
+    void testNoInitialLimit() {
         AllocLimitResult limits = rosie.getAllocLimit();
         assertThat(limits.getLimit()).isEqualTo(0);
     }
 
     @Test
-    public void testSetAndGetLimit() {
+    void testSetAndGetLimit() {
         AllocLimitResult limits;
 
         rosie.setAllocLimit(0);
@@ -42,7 +42,7 @@ public class RosieEngineAllocLimitTest {
     }
 
     @Test
-    public void testSetLimitResult() {
+    void testSetLimitResult() {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(0);
@@ -53,12 +53,12 @@ public class RosieEngineAllocLimitTest {
     }
 
     @Test
-    public void testAllocBelowThreadholdRaisesException() {
+    void testAllocBelowThreadholdRaisesException() {
         assertThrows(IllegalArgumentException.class, () -> rosie.setAllocLimit(8191));
     }
 
     @Test
-    public void testAllocBelowThreadholdLeavesLimitUnchanged() {
+    void testAllocBelowThreadholdLeavesLimitUnchanged() {
         AllocLimitResult limits;
 
         limits = rosie.setAllocLimit(8199);

@@ -7,22 +7,22 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class RosieEngineInitTest {
+class RosieEngineInitTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testInit() {
+    void testInit() {
         assertThat(rosie).isNotNull();
 
         String libpath = rosie.getLibpath();

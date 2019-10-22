@@ -7,22 +7,22 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class PatternTest {
+class PatternTest {
     private RosieEngine rosie;
 
     @BeforeEach
-    public void init() {
+    void init() {
         rosie = new RosieEngine();
     }
 
     @AfterEach
-    public void close() {
+    void close() {
         rosie.close();
     }
 
 
     @Test
-    public void testCompilePattern() {
+    void testCompilePattern() {
         String expression = "[:digit:]+";
         Pattern pattern = rosie.compile(expression);
         assertThat(String.valueOf(pattern)).isEqualTo(expression);
