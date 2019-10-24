@@ -4,7 +4,7 @@
 
     <groupId>com.github.antoniomacri</groupId>
     <artifactId>rosie-pattern-language</artifactId>
-    <version>1.0.0-beta-2</version>
+    <version>1.0.0-beta-3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Rosie Pattern Language</name>
@@ -43,7 +43,7 @@
         <connection>scm:git:git@github.com:antoniomacri/rosie-pattern-language-java.git</connection>
         <developerConnection>scm:git:git@github.com:antoniomacri/rosie-pattern-language-java.git</developerConnection>
         <url>https://github.com/antoniomacri/rosie-pattern-language-java</url>
-        <tag>rosie-pattern-language-1.0.0-beta-2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <dependencies>
