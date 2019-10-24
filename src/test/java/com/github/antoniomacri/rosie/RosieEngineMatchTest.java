@@ -2,6 +2,7 @@ package com.github.antoniomacri.rosie;
 
 import com.github.antoniomacri.rosie.encoding.Decoder;
 import com.github.antoniomacri.rosie.encoding.Decoders;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -14,6 +15,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ArgumentConversionException;
+import org.junit.jupiter.params.converter.ArgumentConverter;
+import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.EnumSet;
 import java.util.Map;
@@ -28,25 +36,7 @@ class RosieEngineMatchTest {
 
     @BeforeAll
     static void beforeClass() {
-        com.jayway.jsonpath.Configuration.setDefaults(new com.jayway.jsonpath.Configuration.Defaults() {
-            private final JsonProvider jsonProvider = new JacksonJsonProvider();
-            private final MappingProvider mappingProvider = new JacksonMappingProvider();
-
-            @Override
-            public JsonProvider jsonProvider() {
-                return jsonProvider;
-            }
-
-            @Override
-            public MappingProvider mappingProvider() {
-                return mappingProvider;
-            }
-
-            @Override
-            public Set<Option> options() {
-                return EnumSet.noneOf(Option.class);
-            }
-        });
+        Configuration.setDefaults(new JacksonConfiguration());
     }
 
     @BeforeEach
@@ -60,348 +50,209 @@ class RosieEngineMatchTest {
     }
 
 
-    @Test
-    void testMatchesSuccess() {
+    @CsvSource({
+            "123,   0",
+            "123a,  0",
+            "a123,  1",
+            "a123a, 1"
+    })
+    @ParameterizedTest
+    void testMatchesSuccess(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        boolean matches = pattern.matches("123");
+        boolean matches = pattern.matches(input, skip);
         assertThat(matches).isTrue();
     }
 
-    @Test
-    void testMatchesNotFull() {
+    @CsvSource({
+            "a123,  0",
+            "0a123, 1"
+    })
+    @ParameterizedTest
+    void testMatchesFailure(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        boolean matches = pattern.matches("123a");
-        assertThat(matches).isTrue();
-    }
-
-    @Test
-    void testMatchesFailure() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        boolean matches = pattern.matches("a123");
-        assertThat(matches).isFalse();
-    }
-
-    @Test
-    void testMatchesSuccessWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        boolean matches = pattern.matches("a123", 1);
-        assertThat(matches).isTrue();
-    }
-
-    @Test
-    void testMatchesNotFullWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        boolean matches = pattern.matches("a123a", 1);
-        assertThat(matches).isTrue();
-    }
-
-    @Test
-    void testMatchesFailureWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        boolean matches = pattern.matches("0a123", 1);
+        boolean matches = pattern.matches(input, skip);
         assertThat(matches).isFalse();
     }
 
 
-    @Test
-    void testBoolMatchSuccess() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchSuccessTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123", Decoders.BOOL);
+        Match match = pattern.match("123", decoder);
 
         assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNull();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(0);
     }
 
-    @Test
-    void testBoolMatchSuccessWithRemaining() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchSuccessWithRemainingTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123a", Decoders.BOOL);
+        Match match = pattern.match("123a", decoder);
 
         assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNull();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(1);
     }
 
-    @Test
-    void testBoolMatchFailed() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchFailedTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("a123", Decoders.BOOL);
+        Match match = pattern.match("a123", decoder);
 
         assertThat(match.matches()).isFalse();
-        assertThat(match.getData()).isNull();
         assertThat(match.isAborted()).isFalse();
     }
 
-    @Test
-    void testBoolMatchSuccessWithSkip() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchSuccessWithSkipTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("a123", 1, Decoders.BOOL);
+        Match match = pattern.match("a123", 1, decoder);
 
         assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNull();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(0);
     }
 
-    @Test
-    void testBoolMatchSuccessWithSkipWithRemaining() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchSuccessWithSkipWithRemainingTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("a123a", 1, Decoders.BOOL);
+        Match match = pattern.match("a123a", 1, decoder);
 
         assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNull();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(1);
     }
 
-    @Test
-    void testBoolMatchFailedWithSkip() {
+    @ParameterizedTest
+    @ValueSource(strings = {"BOOL", "JSON", "LINE", "COLOR"})
+    void testMatchFailedWithSkipTransparentDecoders(@ConvertWith(TransparentDecoderConverter.class) Decoder<Match> decoder) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("0a123", 1, Decoders.BOOL);
+        Match match = pattern.match("0a123", 1, decoder);
 
         assertThat(match.matches()).isFalse();
+        assertThat(match.isAborted()).isFalse();
+    }
+
+
+    @CsvSource({
+            "123,   0",
+            "123a,  0",
+            "a123,  0",
+            "a123,  1",
+            "a123a, 1",
+            "0a123, 1"
+    })
+    @ParameterizedTest
+    void testBoolMatchDataAlwaysNull(String input, int skip) {
+        Pattern pattern = rosie.compile("[:digit:]+");
+
+        Match match = pattern.match(input, skip, Decoders.BOOL);
+
         assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
     }
 
 
-    @Test
-    void testLineMatchSuccess() {
+    @CsvSource({
+            "123,   0",
+            "123a,  0",
+            "a123,  1",
+            "a123a, 1"
+    })
+    @ParameterizedTest
+    void testLineMatchSuccessDataSameAsInput(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123", Decoders.LINE);
+        Match match = pattern.match(input, skip, Decoders.LINE);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("123");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
+        assertThat(match.getData()).isEqualTo(input);
     }
 
-    @Test
-    void testLineMatchSuccessWithRemaining() {
+    @CsvSource({
+            "a123,  0",
+            "0a123, 1"
+    })
+    @ParameterizedTest
+    void testLineMatchFailedDataNull(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123a", Decoders.LINE);
+        Match match = pattern.match(input, skip, Decoders.LINE);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("123a");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-    }
-
-    @Test
-    void testLineMatchFailed() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123", Decoders.LINE);
-
-        assertThat(match.matches()).isFalse();
         assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
     }
 
-    @Test
-    void testLineMatchSuccessWithSkip() {
+
+    @CsvSource({
+            "123,   0, '\u001b[39;1m123\u001b[0m'",
+            "123a,  0, '\u001b[39;1m123\u001b[0ma'",
+            "a123,  1, 'a\u001b[39;1m123\u001b[0m'",
+            "a123a, 1, 'a\u001b[39;1m123\u001b[0ma'"
+    })
+    @ParameterizedTest
+    void testColorMatchSuccess(String input, int skip, String expectedData) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("a123", 1, Decoders.LINE);
+        Match match = pattern.match(input, skip, Decoders.COLOR);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("a123");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
+        assertThat(match.getData()).isEqualTo(expectedData);
     }
 
-    @Test
-    void testLineMatchSuccessWithSkipWithRemaining() {
+    @CsvSource({
+            "a123,  0",
+            "0a123, 1"
+    })
+    @ParameterizedTest
+    void testColorMatchFailedDataNull(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("a123a", 1, Decoders.LINE);
+        Match match = pattern.match(input, skip, Decoders.COLOR);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("a123a");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-    }
-
-    @Test
-    void testLineMatchFailedWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("0a123", 1, Decoders.LINE);
-
-        assertThat(match.matches()).isFalse();
         assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
     }
 
 
-    @Test
-    void testColorMatchSuccess() {
+    @CsvSource({
+            "123,   0",
+            "123a,  0",
+            "a123,  1",
+            "a123a, 1"
+    })
+    @ParameterizedTest
+    void testJsonMatchSuccess(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123", Decoders.COLOR);
+        Match match = pattern.match(input, skip, Decoders.JSON);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("\u001b[39;1m123\u001b[0m");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
-    }
-
-    @Test
-    void testColorMatchSuccessWithRemaining() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("123a", Decoders.COLOR);
-
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("\u001b[39;1m123\u001b[0ma");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-    }
-
-    @Test
-    void testColorMatchFailed() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123", Decoders.COLOR);
-
-        assertThat(match.matches()).isFalse();
-        assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
-    }
-
-    @Test
-    void testColorMatchSuccessWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123", 1, Decoders.COLOR);
-
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("a\u001b[39;1m123\u001b[0m");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
-    }
-
-    @Test
-    void testColorMatchSuccessWithSkipWithRemaining() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123a", 1, Decoders.COLOR);
-
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isEqualTo("a\u001b[39;1m123\u001b[0ma");
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-    }
-
-    @Test
-    void testColorMatchFailedWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("0a123", 1, Decoders.COLOR);
-
-        assertThat(match.matches()).isFalse();
-        assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
-    }
-
-
-    @Test
-    void testJsonMatchSuccess() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("123", Decoders.JSON);
-
-        assertThat(match.matches()).isTrue();
         assertThat(match.getData()).isNotNull();
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
 
         DocumentContext ctx = JsonPath.parse(match.getData());
         JsonPathAssert.assertThat(ctx).jsonPathAsString("$.data").isEqualTo("123");
     }
 
-    @Test
-    void testJsonMatchSuccessWithRemaining() {
+    @ParameterizedTest
+    @CsvSource({
+            "a123, 0",
+            "0a123, 1"
+    })
+    void testJsonMatchFailedDataNull(String input, int skip) {
         Pattern pattern = rosie.compile("[:digit:]+");
 
-        Match match = pattern.match("123a", Decoders.JSON);
+        Match match = pattern.match(input, skip, Decoders.JSON);
 
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNotNull();
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-
-        DocumentContext ctx = JsonPath.parse(match.getData());
-        JsonPathAssert.assertThat(ctx).jsonPathAsString("$.data").isEqualTo("123");
-    }
-
-    @Test
-    void testJsonMatchFailed() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123", Decoders.JSON);
-
-        assertThat(match.matches()).isFalse();
         assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
-    }
-
-    @Test
-    void testJsonMatchSuccessWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123", 1, Decoders.JSON);
-
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNotNull();
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
-
-        DocumentContext ctx = JsonPath.parse(match.getData());
-        JsonPathAssert.assertThat(ctx).jsonPathAsString("$.data").isEqualTo("123");
-    }
-
-    @Test
-    void testJsonMatchSuccessWithSkipWithRemaining() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("a123a", 1, Decoders.JSON);
-
-        assertThat(match.matches()).isTrue();
-        assertThat(match.getData()).isNotNull();
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(1);
-
-        DocumentContext ctx = JsonPath.parse(match.getData());
-        JsonPathAssert.assertThat(ctx).jsonPathAsString("$.data").isEqualTo("123");
-    }
-
-    @Test
-    void testJsonMatchFailedWithSkip() {
-        Pattern pattern = rosie.compile("[:digit:]+");
-
-        Match match = pattern.match("0a123", 1, Decoders.JSON);
-
-        assertThat(match.matches()).isFalse();
-        assertThat(match.getData()).isNull();
-        assertThat(match.isAborted()).isFalse();
     }
 
 
@@ -412,10 +263,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("1.2.3.4", Decoders.JSON);
 
-        assertThat(match.matches()).isTrue();
         assertThat(match.getData()).isNotNull();
-        assertThat(match.isAborted()).isFalse();
-        assertThat(match.getRemainingBytes()).isEqualTo(0);
 
         DocumentContext ctx = JsonPath.parse(match.getData());
         JsonPathAssert.assertThat(ctx).jsonPathAsString("$.data").isEqualTo("1.2.3.4");
@@ -428,16 +276,48 @@ class RosieEngineMatchTest {
 
     @Test
     void testMatchInvalidEncoderName() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Pattern pattern = rosie.compile("[:digit:]+");
+        Pattern pattern = rosie.compile("[:digit:]+");
+        assertThrows(IllegalArgumentException.class,
+                () -> pattern.match("123", new Decoder<Match>("this_is_not_a_valid_encoder_name") {
+                    @Override
+                    public Match decode(Match match) {
+                        return null;
+                    }
+                }));
+    }
 
-            String input = "889900112233445566778899100101102103104105106107108109110xyz";
-            pattern.match(input, new Decoder<Match>("this_is_not_a_valid_encoder_name") {
-                @Override
-                public Match decode(Match match) {
-                    return null;
-                }
-            });
-        });
+
+    static class JacksonConfiguration implements Configuration.Defaults {
+        private final JsonProvider jsonProvider = new JacksonJsonProvider();
+        private final MappingProvider mappingProvider = new JacksonMappingProvider();
+
+        @Override
+        public JsonProvider jsonProvider() {
+            return jsonProvider;
+        }
+
+        @Override
+        public MappingProvider mappingProvider() {
+            return mappingProvider;
+        }
+
+        @Override
+        public Set<Option> options() {
+            return EnumSet.noneOf(Option.class);
+        }
+    }
+
+    static class TransparentDecoderConverter implements ArgumentConverter {
+        public TransparentDecoderConverter() {
+        }
+
+        @Override
+        public Object convert(Object source, ParameterContext context) throws ArgumentConversionException {
+            try {
+                return Decoders.class.getDeclaredField(((String) source)).get(null);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new ArgumentConversionException("Illegal decoder", e);
+            }
+        }
     }
 }
