@@ -33,7 +33,7 @@ class RosieEngineTraceTest {
 
     @Test
     void testTraceNetAny() {
-        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "condensed");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, Pattern.TraceStyle.CONDENSED);
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();
         assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
@@ -41,7 +41,7 @@ class RosieEngineTraceTest {
 
     @Test
     void testTraceNetIp() {
-        TraceResult traceResult = netIpPattern.trace("1.2.3", 1, "condensed");
+        TraceResult traceResult = netIpPattern.trace("1.2.3", 1, Pattern.TraceStyle.CONDENSED);
         assertThat(traceResult.matched()).isFalse();
         assertThat(traceResult.getTrace()).isNotNull();
         assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
@@ -49,7 +49,7 @@ class RosieEngineTraceTest {
 
     @Test
     void testTraceNetAnyFull() {
-        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "full");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, Pattern.TraceStyle.FULL);
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();
         assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);
@@ -64,7 +64,7 @@ class RosieEngineTraceTest {
 
     @Test
     void testTraceNetAnyJson() throws IOException {
-        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, "json");
+        TraceResult traceResult = netAnyPattern.trace("1.2.3.4", 1, Pattern.TraceStyle.JSON);
         assertThat(traceResult.matched()).isTrue();
         assertThat(traceResult.getTrace()).isNotNull();
         assertThat(traceResult.getTrace()).hasSizeGreaterThan(0);

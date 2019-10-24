@@ -185,4 +185,10 @@ public class Pattern implements Closeable {
          */
         int ERR_NO_PATTERN = 4;
     }
+
+    interface TraceStyle {
+        String CONDENSED = "condensed";
+        String FULL = "full";
+        String JSON = "json";
+    }
 }
