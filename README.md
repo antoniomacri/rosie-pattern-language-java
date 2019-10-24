@@ -2,12 +2,14 @@
 
 This is a Java binding for the *Rosie Pattern Language* library (`librosie`).
 
+It requires a Rosie installation, which must be done separately. See the [Rosie repository](https://gitlab.com/rosie-pattern-language/rosie).
+
 
 ## What is Rosie?
 
-Quoting from the [original project site](https://developer.ibm.com/code/open/projects/rosie-pattern-language/):
+Quoting from the [original project site](https://rosie-lang.org/about/):
 
-> Rosie Pattern Language is a supercharged alternative to regular expressions (regex), matching patterns against any input text. Rosie ships with hundreds of sample patterns for timestamps, network addresses, email addresses, CSV, JSON, and many more.
+> Rosie is a supercharged alternative to Regular Expressions (regex), matching patterns against any input text. Rosie ships with a standard library of patterns for matching timestamps, network addresses, email addresses, CSV files, JSON, and many more common syntactic forms.
 
 
 Useful links:
@@ -18,8 +20,7 @@ Useful links:
 
 # TODO
 
- - [ ] Write JavaDoc (maybe adapt from original librosie).
- - [ ] Write usage and add some examples here.
+ - Add some examples here.
 
 
 # Usage
