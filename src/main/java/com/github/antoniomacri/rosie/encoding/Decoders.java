@@ -14,7 +14,7 @@ import com.github.antoniomacri.rosie.Match;
  */
 public class Decoders {
     /**
-     * Produces a {@link Match} with a proper value for {@link Match#matches()}.
+     * Produces a {@link Match} with a proper value for {@link Match#isMatched()}.
      * <p>
      * Notice that the matched string is not extracted and {@link Match#getData()}
      * is therefore null. This is faster than {@link #JSON} for when you want to know
@@ -47,7 +47,7 @@ public class Decoders {
     public static final Decoder<Boolean> BOOL_VALUE = new Decoder<Boolean>("bool") {
         @Override
         public Boolean decode(Match match) {
-            return match.matches();
+            return match.isMatched();
         }
     };
 

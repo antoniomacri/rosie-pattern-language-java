@@ -44,7 +44,7 @@ public class Match {
     /**
      * Returns {@code true} if the pattern matched.
      */
-    public boolean matches() {
+    public boolean isMatched() {
         return Boolean.TRUE.equals(bool) || data != null;
     }
 

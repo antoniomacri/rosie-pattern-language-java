@@ -84,7 +84,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("123", decoder);
 
-        assertThat(match.matches()).isTrue();
+        assertThat(match.isMatched()).isTrue();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(0);
     }
@@ -96,7 +96,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("123a", decoder);
 
-        assertThat(match.matches()).isTrue();
+        assertThat(match.isMatched()).isTrue();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(1);
     }
@@ -108,7 +108,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("a123", decoder);
 
-        assertThat(match.matches()).isFalse();
+        assertThat(match.isMatched()).isFalse();
         assertThat(match.isAborted()).isFalse();
     }
 
@@ -119,7 +119,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("a123", 1, decoder);
 
-        assertThat(match.matches()).isTrue();
+        assertThat(match.isMatched()).isTrue();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(0);
     }
@@ -131,7 +131,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("a123a", 1, decoder);
 
-        assertThat(match.matches()).isTrue();
+        assertThat(match.isMatched()).isTrue();
         assertThat(match.isAborted()).isFalse();
         assertThat(match.getRemainingBytes()).isEqualTo(1);
     }
@@ -143,7 +143,7 @@ class RosieEngineMatchTest {
 
         Match match = pattern.match("0a123", 1, decoder);
 
-        assertThat(match.matches()).isFalse();
+        assertThat(match.isMatched()).isFalse();
         assertThat(match.isAborted()).isFalse();
     }
 

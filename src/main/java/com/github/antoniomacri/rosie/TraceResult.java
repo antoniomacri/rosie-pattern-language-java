@@ -14,7 +14,7 @@ public class TraceResult {
     /**
      * {@code true} if the input matched.
      */
-    public boolean matched() {
+    public boolean isMatched() {
         return matched;
     }
 
